@@ -36,3 +36,37 @@ export async function regester(req: Request, res: Response, next: NextFunction) 
         next(err);
     }
 }
+
+export async function facebookAuth(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
+
+        return response.ok(res, 'OK', { 
+            token: token, 
+            user: req.user 
+        });
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+// export async function googleAuth(req: Request, res: Response, next: NextFunction) {
+
+//     try {
+
+//         const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
+
+//         return response.ok(res, 'OK', { 
+//             token: token, 
+//             user: req.user 
+//         });
+
+//     } catch (err) {
+
+//         next(err);
+//     }
+// }

@@ -10,7 +10,7 @@ import userAuth from './routes/user/auth'
 // import userPay from './routes/user/pay'
 import errorHandler from './helpers/error'
 import path from 'path'
-// import passAuth from './services/passport';
+import passAuth from './services/passport';
 
 
 //multer
@@ -42,7 +42,7 @@ export default (app: Application) => {
     //bodyParser
     app.use(bodyParser.json());
     //passport
-    // app.use(passAuth.initialize());
+    app.use(passAuth.initialize());
     //multer
     app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('image'));
     app.use('/uploads', express.static(path.join(__dirname, '../', 'uploads')));

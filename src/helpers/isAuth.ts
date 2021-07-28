@@ -178,6 +178,11 @@ export default class Auth {
 
     static async regesterSocialMedia(profile: Profile, method: string, req: any) {
         try {
+            if (profile.emails[0].value == '') {
+                const err = new httpError(422, 7, "looks like you are trying to login with facebook token does not have an email access")
+                throw err;
+            }
+
 
             //this method works for social media "facebook, google" with merging accounts, login or regestration
             if (method == 'facebook') {
@@ -291,7 +296,7 @@ export default class Auth {
         try {
             //get token
 
-            const token: string = await this.getToken(<Request>req); 
+            const token: string = await this.getToken(<Request>req);
 
 
             //decode token
@@ -334,7 +339,7 @@ export default class Auth {
             if (!decodedToken) {
                 return false
             }
-            
+
             const user = await User.findById(decodedToken.id);
 
             if (!user) {
@@ -343,9 +348,9 @@ export default class Auth {
 
             req.user = decodedToken.id;
 
-            return true ;
+            return true;
         } catch (err) {
-            throw err ;
+            throw err;
         }
     }
 

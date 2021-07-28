@@ -29,4 +29,7 @@ router.put('/regester',[
     .trim()
 ], authController.regester) ;
 
+router.put('/regester/facebook',passport.authenticate('facebookToken',{session:false}),authController.facebookAuth)
+
+
 export default router ;
