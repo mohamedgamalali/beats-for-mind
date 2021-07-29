@@ -53,6 +53,8 @@ export default class beetData {
 
 
         } catch (err) {
+            console.log(err);
+            
             let paths: string[] = [];
             files.forEach(file => {
                 paths.push(file.path);
