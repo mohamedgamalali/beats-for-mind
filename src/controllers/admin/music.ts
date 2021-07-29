@@ -42,28 +42,28 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         console.log(req.files);
         
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return response.ValidationFaild(res, 'validation faild', errors.array())
-        }
+        // const errors = validationResult(req);
+        // if (!errors.isEmpty()) {
+        //     return response.ValidationFaild(res, 'validation faild', errors.array())
+        // }
 
-        if (images.length == 0) {
-            return response.ValidationFaild(res, 'you should at least insert one image')
-        }
+        // if (images.length == 0) {
+        //     return response.ValidationFaild(res, 'you should at least insert one image')
+        // }
 
-        imagePath = images[0].path;
+        // imagePath = images[0].path;
 
-        if (!images[1]) {
-            coverImagePath = imagePath;
-        } else {
-            coverImagePath = images[1].path;
-        }
+        // if (!images[1]) {
+        //     coverImagePath = imagePath;
+        // } else {
+        //     coverImagePath = images[1].path;
+        // }
 
-        const cat = await Catigory.findById(catigory);
+        // const cat = await Catigory.findById(catigory);
 
-        if (!cat) {
-            return response.NotFound(res, 'catigory not found');
-        }
+        // if (!cat) {
+        //     return response.NotFound(res, 'catigory not found');
+        // }
 
         // const newBeet = new Beet({
         //     name: name,
@@ -76,11 +76,6 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
 
 
         // })
-
-
-
-
-
 
 
         return response.created(res, 'catigory created', 'data');
