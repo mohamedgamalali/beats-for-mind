@@ -31,15 +31,16 @@ const fileStorage = multer.diskStorage({
 
 
 const fileFilter: any = (req: any, file: any, cb: any) => {
-    // if (file.mimetype === 'image/png' ||
-    //     file.mimetype === 'image/jpg' ||
-    //     file.mimetype === 'image/jpeg'||
-    //     file.mimetype === 'audio/wav' ||
-    //     file.mimetype === 'audio/mp3') {
+    const mint = file.mimetype.split('/')
+    if (mint === 'png' ||
+        mint === 'jpg' ||
+        mint === 'jpeg'||
+        mint === 'wav' ||
+        mint === 'mp3') {
         cb(null, true);
-    // } else {
-    //     cb(null, false, new Error('only images or audio are allowed'));
-    // }
+    } else {
+        cb(null, false, new Error('only images or audio are allowed'));
+    }
 }
 
 // const fileStorageBeets = multer.diskStorage({
