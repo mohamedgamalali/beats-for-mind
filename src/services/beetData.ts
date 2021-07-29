@@ -13,8 +13,10 @@ export default class beetData {
         try {
             const imageExts: string[] = ['.png', '.jpg', '.jpeg']
             const audioPath: string[] = ['wav', 'mp3'];
-
-            let result: filesContainer;
+            let image:string = '';
+            let imageCover:string = '';
+            let audio:string = '';
+ 
 
             if (files.length == 0) {
                 const err = new httpError(404, 7, 'no files provided!!')
@@ -33,18 +35,25 @@ export default class beetData {
 
                 //if image
                 if (imageExts.includes(ext)) {
-                    if (!result.image) {
-                        result.image = file.path;
+                    if (!image) {
+                        image = file.path;
                         console.log(file.path);
                         
-                    } else if (!result.imageCover) {
-                        result.imageCover = file.path;
+                    } else if (!imageCover) {
+                        imageCover = file.path;
                     }
                 } else { //audio
-                    result.audio = file.path;
+                    audio = file.path;
 
                 }
             });
+
+            let result: filesContainer = {
+                image:image,
+                imageCover:imageCover,
+                audio:audio
+            };
+
 
             console.log(result);
             
