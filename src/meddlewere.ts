@@ -34,11 +34,12 @@ const fileFilter: any = (req: any, file: any, cb: any) => {
     const mint = file.mimetype.split('/')
     console.log(mint);
     
-    if (mint === '/png' ||
-        mint === '/jpg' ||
-        mint === '/jpeg'||
-        mint === '/wav' ||
-        mint === '/mp3') {
+    if (mint[1] === 'png' ||
+        mint[1] === 'jpg' ||
+        mint[1] === 'jpeg'||
+        mint[1] === 'wav' ||
+        mint[1] === 'mp3' ||
+        mint[1] === 'mpeg' ) {
         cb(null, true);
     } else {
         cb(null, false, new Error('only images or audio are allowed'));
