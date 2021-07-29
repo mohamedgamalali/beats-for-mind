@@ -19,7 +19,7 @@ const fileStorage = multer.diskStorage({
         // if(file.mimetype == 'audio/wav' || file.mimetype == 'audio/mp3'){
             // cb(null, 'uploads/beets');
         // }else{
-            cb(null, 'uploads');
+            cb(null, '../uploads');
         // }
     },
     filename: (req, file, cb) => {
