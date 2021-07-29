@@ -16,11 +16,11 @@ import passAuth from './services/passport';
 //multer
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        if(file.mimetype == 'audio/wav' || file.mimetype == 'audio/mp3'){
-            cb(null, 'uploads/beets');
-        }else{
+        // if(file.mimetype == 'audio/wav' || file.mimetype == 'audio/mp3'){
+            // cb(null, 'uploads/beets');
+        // }else{
             cb(null, 'uploads');
-        }
+        // }
     },
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString() + '-' + file.originalname);
