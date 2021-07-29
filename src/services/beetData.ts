@@ -42,7 +42,7 @@ export default class beetData {
                         throw err;
                     }
                 } else { //audio
-                    if(index === 3){
+                    if(index === 2 || index === 1){
                         result.audio = file.path ;
                     }else{
                         const err = new httpError(404, 7, 'audio not in the right position')
