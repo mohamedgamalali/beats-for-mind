@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator'
 import Catigory, { catigory } from '../../models/catigory';
 import Beet, { beet } from '../../models/beet';
 import { Types } from 'mongoose';
-
+import beetsData, {filesContainer} from '../../services/beetData';
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -77,8 +77,9 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
 
         // })
 
+        const data:filesContainer = await beetsData.files(images)
 
-        return response.created(res, 'catigory created', 'data');
+        return response.created(res, 'catigory created', data);
 
     } catch (err) {
 
