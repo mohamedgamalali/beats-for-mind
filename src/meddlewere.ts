@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import multer from 'multer';
 // import authAdmin from './routes/admin/auth'
 // import adminUser from './routes/admin/user'
-// import shopAdmin from './routes/admin/shop'
+import musicAdmin from './routes/admin/music'
 // import shopUser from './routes/user/shop'
 import userAuth from './routes/user/auth'
 // import userShopAuth from './routes/user/auth_required_shop'
@@ -16,7 +16,11 @@ import passAuth from './services/passport';
 //multer
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads');
+        if(file.mimetype == 'audio/wav' || file.mimetype == 'audio/mp3'){
+            cb(null, 'uploads/beets');
+        }else{
+            cb(null, 'uploads');
+        }
     },
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString() + '-' + file.originalname);
@@ -29,12 +33,35 @@ const fileStorage = multer.diskStorage({
 const fileFilter: any = (req: any, file: any, cb: any) => {
     if (file.mimetype === 'image/png' ||
         file.mimetype === 'image/jpg' ||
-        file.mimetype === 'image/jpeg') {
+        file.mimetype === 'image/jpeg'||
+        file.mimetype === 'audio/wav' ||
+        file.mimetype === 'audio/mp3') {
         cb(null, true);
     } else {
-        cb(null, false, new Error('only images are allowed'));
+        cb(null, false, new Error('only images or audio are allowed'));
     }
 }
+
+// const fileStorageBeets = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/beets');
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, new Date().toISOString() + '-' + file.originalname);
+//     }
+// });
+
+
+
+
+// const fileFilterBeets: any = (req: any, file: any, cb: any) => {
+//     if (file.mimetype === 'audio/wav' ||
+//         file.mimetype === 'audio/mp3' ) {
+//         cb(null, true);
+//     } else {
+//         cb(null, false, new Error('only audio are allowed'));
+//     }
+// }
 
 
 export default (app: Application) => {
@@ -43,9 +70,12 @@ export default (app: Application) => {
     app.use(bodyParser.json());
     //passport
     app.use(passAuth.initialize());
-    //multer
+    //multer image
     app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('image'));
     app.use('/uploads', express.static(path.join(__dirname, '../', 'uploads')));
+    //multer beet
+    // app.use(multer({ storage: fileStorageBeets, fileFilter: fileFilterBeets }).array('beet'));
+    // app.use('/uploads/beets', express.static(path.join(__dirname, '../', 'uploads/beets')));
 
     //headers meddlewere
     app.use((req: Request, res: Response, next: NextFunction) => {
@@ -58,7 +88,7 @@ export default (app: Application) => {
     //admin
     // app.use('/admin', authAdmin);
    
-    // app.use('/admin/shop', shopAdmin);
+    app.use('/admin/music', musicAdmin);
 
     // app.use('/admin/user', adminUser);
 
