@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import response from '../../helpers/Response'
 import Auth, { Token } from '../../helpers/isAuth'
 import { validationResult } from 'express-validator'
+import authServices from '../../services/auth'
 
 const mobileValidator = require('validate-phone-number-node-js')
 
@@ -54,19 +55,45 @@ export async function facebookAuth(req: Request, res: Response, next: NextFuncti
     }
 }
 
-// export async function googleAuth(req: Request, res: Response, next: NextFunction) {
+export async function googleAuth(req: Request, res: Response, next: NextFunction) {
 
-//     try {
+    try {
 
-//         const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
+        const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
 
-//         return response.ok(res, 'OK', { 
-//             token: token, 
-//             user: req.user 
-//         });
+        return response.ok(res, 'OK', { 
+            token: token, 
+            user: req.user 
+        });
 
-//     } catch (err) {
+    } catch (err) {
 
-//         next(err);
-//     }
-// }
+        next(err);
+    }
+}
+
+export async function localLogin(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const emailOrMobile = req.body.emailOrMobile;
+        const password     = req.body.password;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+
+        const token:Token = await authServices.login(emailOrMobile, password, res, 'user', <string>process.env.JWT_PRIVATE_KEY_USER, req)
+
+        return response.ok(
+            res,
+             'logged in successfully',
+             {...token});
+
+    } catch (err) {
+
+        next(err);
+    }
+}
