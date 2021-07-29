@@ -35,6 +35,8 @@ export default class beetData {
                 if (imageExts.includes(ext)) {
                     if (!result.image) {
                         result.image = file.path;
+                        console.log(file.path);
+                        
                     } else if (!result.imageCover) {
                         result.imageCover = file.path;
                     }

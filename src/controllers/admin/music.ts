@@ -38,8 +38,6 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         const images: any = req.files;
         let imagePath: string;
         let coverImagePath: string;
-
-        console.log(req.files);
         
 
         // const errors = validationResult(req);
