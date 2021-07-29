@@ -1,6 +1,6 @@
 import path from 'path';
 import httpError from '../helpers/httpError';
-import deleteFile from './file' ;
+import deleteFile from './file';
 
 export type filesContainer = {
     image: string,
@@ -14,7 +14,7 @@ export default class beetData {
             const imageExts: string[] = ['png', 'jpg', 'jpeg']
             const audioPath: string[] = ['wav', 'mp3'];
 
-            let result: filesContainer ;
+            let result: filesContainer;
 
             if (files.length == 0) {
                 const err = new httpError(404, 7, 'no files provided!!')
@@ -33,36 +33,30 @@ export default class beetData {
 
                 //if image
                 if (imageExts.includes(ext)) {
-                    if (index === 0) {
+                    if (!result.image) {
                         result.image == file.path;
-                    } else if (index === 1) {
+                    } else if (!result.imageCover) {
                         result.imageCover == file.path;
-                    } 
-                    // else {
-                    //     const err = new httpError(404, 7, 'image not in the right position')
-                    //     throw err;
-                    // }
-                } else { //audio
-                    if(index === 2 || index === 1){
-                        result.audio = file.path ;
                     }
-                    // else{
-                    //     const err = new httpError(404, 7, 'audio not in the right position')
-                    //     throw err;
-                    // }
+                } else { //audio
+                    result.audio = file.path;
+
                 }
             });
 
-            return result ;
+            console.log(result);
+            
+
+            return result;
 
 
         } catch (err) {
-            let paths:string[] = [] ;
-            files.forEach(file=>{
+            let paths: string[] = [];
+            files.forEach(file => {
                 paths.push(file.path);
             });
             const dd = new deleteFile(paths);
-            
+
             await dd.deleteFile()
             if (!err.status) {
                 err.status = 500;
@@ -73,5 +67,5 @@ export default class beetData {
     }
 
 
-    
+
 }
