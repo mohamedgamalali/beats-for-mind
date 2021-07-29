@@ -32,11 +32,13 @@ const fileStorage = multer.diskStorage({
 
 const fileFilter: any = (req: any, file: any, cb: any) => {
     const mint = file.mimetype.split('/')
-    if (mint === 'png' ||
-        mint === 'jpg' ||
-        mint === 'jpeg'||
-        mint === 'wav' ||
-        mint === 'mp3') {
+    console.log(mint);
+    
+    if (mint === '/png' ||
+        mint === '/jpg' ||
+        mint === '/jpeg'||
+        mint === '/wav' ||
+        mint === '/mp3') {
         cb(null, true);
     } else {
         cb(null, false, new Error('only images or audio are allowed'));
