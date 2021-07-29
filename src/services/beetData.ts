@@ -17,7 +17,8 @@ export default class beetData {
             let imageCover:string = '';
             let audio:string = '';
  
-
+            console.log(files);
+            
             if (files.length == 0) {
                 const err = new httpError(404, 7, 'no files provided!!')
                 throw err;
@@ -37,7 +38,6 @@ export default class beetData {
                 if (imageExts.includes(ext)) {
                     if (!image) {
                         image = file.path;
-                        console.log(file.path);
                         
                     } else if (!imageCover) {
                         imageCover = file.path;
