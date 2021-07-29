@@ -37,17 +37,19 @@ export default class beetData {
                         result.image == file.path;
                     } else if (index === 1) {
                         result.imageCover == file.path;
-                    } else {
-                        const err = new httpError(404, 7, 'image not in the right position')
-                        throw err;
-                    }
+                    } 
+                    // else {
+                    //     const err = new httpError(404, 7, 'image not in the right position')
+                    //     throw err;
+                    // }
                 } else { //audio
                     if(index === 2 || index === 1){
                         result.audio = file.path ;
-                    }else{
-                        const err = new httpError(404, 7, 'audio not in the right position')
-                        throw err;
                     }
+                    // else{
+                    //     const err = new httpError(404, 7, 'audio not in the right position')
+                    //     throw err;
+                    // }
                 }
             });
 
