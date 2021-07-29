@@ -11,7 +11,7 @@ export type filesContainer = {
 export default class beetData {
     static async files(files: any[]) {
         try {
-            const imageExts: string[] = ['png', 'jpg', 'jpeg']
+            const imageExts: string[] = ['.png', '.jpg', '.jpeg']
             const audioPath: string[] = ['wav', 'mp3'];
 
             let result: filesContainer;
@@ -34,9 +34,9 @@ export default class beetData {
                 //if image
                 if (imageExts.includes(ext)) {
                     if (!result.image) {
-                        result.image == file.path;
+                        result.image = file.path;
                     } else if (!result.imageCover) {
-                        result.imageCover == file.path;
+                        result.imageCover = file.path;
                     }
                 } else { //audio
                     result.audio = file.path;
