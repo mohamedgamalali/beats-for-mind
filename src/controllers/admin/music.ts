@@ -59,10 +59,10 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         if (data.image == '') {
             return response.ValidationFaild(res, 'you should at least insert beet image')
         }
-        if(data.coverImage == ''){
+        if(data.imageCover == ''){
             coverImagePath = data.image ;
         }else{
-            coverImagePath = data.coverImage ;
+            coverImagePath = data.imageCover ;
         }
 
         const cat = await Catigory.findById(catigory)
