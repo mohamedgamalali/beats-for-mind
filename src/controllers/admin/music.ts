@@ -69,6 +69,8 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         if(!cat){
             return response.NotFound(res, 'catigory not found')
         }
+        console.log(coverImagePath);
+
         const newBeet = new Beet({
             name: name,
             image: data.image,
@@ -76,7 +78,7 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             beet: data.audio,
             catigory: cat?._id
         })
-
+        
         await newBeet.save() ;
 
 
