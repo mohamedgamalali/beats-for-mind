@@ -70,6 +70,7 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             return response.NotFound(res, 'catigory not found')
         }
         console.log(coverImagePath);
+        console.log(data);
 
         const newBeet = new Beet({
             name: name,
