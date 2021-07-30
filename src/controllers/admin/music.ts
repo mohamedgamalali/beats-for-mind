@@ -74,7 +74,7 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             image: data.image,
             coverImage: coverImagePath,
             beet: data.audio,
-            catigory: Types.ObjectId
+            catigory: cat?._id
         })
 
         await newBeet.save() ;
