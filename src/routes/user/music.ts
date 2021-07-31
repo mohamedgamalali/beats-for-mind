@@ -13,6 +13,5 @@ router.put('/favourits', [
     .not().isEmpty(),
 ],isAuth , musicController.postFav)
 
-router.get('/search', isAuth, musicController.search)
 
 export default router;

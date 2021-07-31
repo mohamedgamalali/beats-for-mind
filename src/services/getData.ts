@@ -18,7 +18,7 @@ export default class getDate {
         this.page = page;
     }
 
-    async Beets(tap: string, quiry: number, userId: Types.ObjectId, catigory: boolean | Types.ObjectId = false) {
+    async Beets(tap: string, quiry: number,searchQ:any, userId: Types.ObjectId, catigory: boolean | Types.ObjectId = false) {
         let find: object = { hide: false };
         let total: number = 0;
         let beets: any = {};
@@ -35,6 +35,13 @@ export default class getDate {
             find = {
                 ...find,
                 catigory: catigory
+            }
+        }
+
+        if(searchQ){
+            find = {
+                ...find,
+                name: new RegExp(searchQ.trim(), 'i')
             }
         }
 
