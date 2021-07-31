@@ -25,7 +25,7 @@ const beetSchema: Schema = new Schema({
     },
     catigory: {
         type: Schema.Types.ObjectId,
-        refPath: 'catigory',
+        ref: 'catigory',
         required:true
     },
     downloads:{

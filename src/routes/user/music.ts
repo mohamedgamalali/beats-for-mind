@@ -6,7 +6,13 @@ import isAuth from '../../helpers/isAuthUser'
 
 const router = Router();
 
-router.get('/',isAuth , musicController.getBeets);
+router.get('/', isAuth, musicController.getBeets);
 
+router.put('/favourits', [
+    body('beetId')
+    .not().isEmpty(),
+], musicController.postFav)
+
+router.get('/search', isAuth, musicController.search)
 
 export default router;

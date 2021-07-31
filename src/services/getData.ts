@@ -45,17 +45,19 @@ export default class getDate {
                 .sort([[sortFields[quiry], -1]])
                 .skip((this.page - 1) * this.itemPerPage)
                 .limit(this.itemPerPage);
-            
+
 
 
             total = await Beet.find(find).countDocuments();
 
             const favorites: any = await Fev.find({ user: userId });
             finalPeet = []
+
             beets.forEach((item: any) => {
                 let f: boolean = false;
+                const incloude = favorites.filter((i: any) => i.user == userId && i.beet == item._id.toString());
 
-                if (favorites.includes({ user: userId, beet: item._id })) {
+                if (incloude.length > 0) {
                     f = true;
                 }
                 finalPeet.push({
@@ -78,10 +80,12 @@ export default class getDate {
 
             const favorites: any = await Fev.find({ user: userId });
             finalPeet = []
+
             beets.forEach((item: any) => {
                 let f: boolean = false;
+                const incloude = favorites.filter((i: any) => i.user == userId && i.beet == item._id.toString());
 
-                if (favorites.includes({ user: userId, beet: item._id })) {
+                if (incloude.length > 0) {
                     f = true;
                 }
                 finalPeet.push({
@@ -104,7 +108,7 @@ export default class getDate {
             finalPeet = []
             beets.forEach((item: any) => {
                 finalPeet.push({
-                    beet: item,
+                    beet: item.beet,
                     fev: true
                 });
             })

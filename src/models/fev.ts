@@ -4,12 +4,12 @@ import mongoose, { Schema, Document, Types } from 'mongoose'
 const fevSchema: Schema = new Schema({
     user:{
         type: Schema.Types.ObjectId,
-        refPath: 'user',
+        ref: 'user',
         required:true
     },
     beet:{
         type: Schema.Types.ObjectId,
-        refPath: 'beet',
+        ref: 'beet',
         required:true
     },
 
