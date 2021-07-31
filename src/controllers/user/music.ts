@@ -70,3 +70,26 @@ export async function postFav(req: Request, res: Response, next: NextFunction) {
         next(err);
     }
 }
+
+export async function search(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const type:any = req.query.sort || 1 ;
+        const page:any = req.query.page || 1 ;
+        const catigory:any  = req.query.catigory  ;
+        const tap:any  = req.query.tap || 'home' ;       //home || fev || downloads
+
+        const get = new getData(page);
+
+        const beets:getBeet = await get.Beets(tap,type, <Types.ObjectId> req.user ,catigory);
+
+        return response.ok(res, `beets sorted with ${beets.sortField}`, {...beets})
+
+        
+
+    } catch (err) {
+
+        next(err);
+    }
+}
