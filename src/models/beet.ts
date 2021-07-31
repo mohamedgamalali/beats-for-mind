@@ -21,12 +21,24 @@ const beetSchema: Schema = new Schema({
     duration: String,
     hide: {
         type: Boolean,
-        deafult: false
+        default: false
     },
     catigory: {
         type: Schema.Types.ObjectId,
         refPath: 'catigory',
         required:true
+    },
+    downloads:{
+        type:Number,
+        default:0
+    },
+    plays:{
+        type:Number,
+        default:0
+    },
+    fev:{
+        type:Number,
+        default:0
     }
 
 }, { timestamps: true });
