@@ -5,6 +5,7 @@ import Catigory, { catigory } from '../../models/catigory';
 import Beet, { beet } from '../../models/beet';
 import { Types } from 'mongoose';
 import beetsData, { filesContainer } from '../../services/beetData';
+import saveImage from '../../services/cloudenary' ;
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -81,6 +82,25 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         })
         
         await newBeet.save() ;
+
+        if(process.env.stage == 'test'){
+            if(data.image!==''){
+                const saveToCloud = new saveImage(data.image);
+                const newFileName = await saveToCloud.save() ;
+                newBeet.image = newFileName.url;
+                await newBeet.save() ;
+            }
+            if(data.imageCover!==''){
+                const saveToCloud = new saveImage(data.imageCover);
+                const newFileName = await saveToCloud.save() ;
+                newBeet.coverImage = newFileName.url;
+                await newBeet.save() ;
+            }
+            if(data.imageCover == ''){
+                newBeet.coverImage = newBeet.image ;
+                await newBeet.save() ;
+            }
+        }
 
 
         return response.created(res, 'catigory created', {

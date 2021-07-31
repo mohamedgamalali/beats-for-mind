@@ -12,14 +12,16 @@ import errorHandler from './helpers/error'
 import path from 'path'
 import passAuth from './services/passport';
 
+const cloudinary = require('cloudinary').v2;
+
 
 //multer
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         // if(file.mimetype == 'audio/wav' || file.mimetype == 'audio/mp3'){
-            // cb(null, 'uploads/beets');
+        // cb(null, 'uploads/beets');
         // }else{
-            cb(null, 'uploads');
+        cb(null, 'uploads');
         // }
     },
     filename: (req, file, cb) => {
@@ -33,13 +35,13 @@ const fileStorage = multer.diskStorage({
 const fileFilter: any = (req: any, file: any, cb: any) => {
     const mint = file.mimetype.split('/')
     console.log(mint);
-    
+
     if (mint[1] === 'png' ||
         mint[1] === 'jpg' ||
-        mint[1] === 'jpeg'||
+        mint[1] === 'jpeg' ||
         mint[1] === 'wav' ||
         mint[1] === 'mp3' ||
-        mint[1] === 'mpeg' ) {
+        mint[1] === 'mpeg') {
         cb(null, true);
     } else {
         cb(null, false, new Error('only images or audio are allowed'));
@@ -89,19 +91,24 @@ export default (app: Application) => {
         next();
     });
 
+    cloudinary.config({
+        cloud_name: process.env.cloudinary_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_HEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
     //admin
     // app.use('/admin', authAdmin);
-   
+
     app.use('/admin/music', musicAdmin);
 
     // app.use('/admin/user', adminUser);
 
 
-    
+
     // //user
     // //authrization not required
     // app.use('/user', shopUser);
-    
+
     // //user auth
     app.use('/user/auth', userAuth);
 
