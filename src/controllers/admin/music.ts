@@ -92,7 +92,7 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             }
             if(data.audio!==''){
                 const saveToCloud = new saveImage(data.audio);
-                const newFileName = await saveToCloud.save() ;
+                const newFileName = await saveToCloud.save(true) ;
                 newBeet.beet = newFileName.url;
                 await newBeet.save() ;
             }
