@@ -5,6 +5,7 @@ import multer from 'multer';
 // import adminUser from './routes/admin/user'
 import musicAdmin from './routes/admin/music'
 import musicAuthRequired from './routes/user/music'
+import streamController from './routes/stream/stream'
 import userAuth from './routes/user/auth'
 // import userShopAuth from './routes/user/auth_required_shop'
 // import userPay from './routes/user/pay'
@@ -115,6 +116,7 @@ export default (app: Application) => {
     // //user shop 
     // //authrization required
     app.use('/music', musicAuthRequired);
+    app.use('/stream', streamController);
 
     // app.use('/user/pay', userPay);
 

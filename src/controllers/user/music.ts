@@ -16,7 +16,7 @@ export async function getBeets(req: Request, res: Response, next: NextFunction) 
         const page: any = req.query.page || 1;
         const catigory: any = req.query.catigory;
         const tap: any = req.query.tap || 'home';       //home || fev || downloads
-        const searchQ  = req.query.searchQ || false;
+        const searchQ = req.query.searchQ || false;
 
         const get = new getData(page);
 
@@ -36,7 +36,7 @@ export async function postFav(req: Request, res: Response, next: NextFunction) {
 
     try {
         const id: any = req.body.beetId;
-
+        let fevItem:any;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return response.ValidationFaild(res, 'validation faild', errors.array())
@@ -48,22 +48,23 @@ export async function postFav(req: Request, res: Response, next: NextFunction) {
             return response.NotFound(res, 'beet not found', item)
         }
 
-        const fevItem = await Fev.findOne({ user: req.user, beet: item._id });
+        fevItem = await Fev.findOne({ user: req.user, beet: item._id });
 
         if (fevItem) {
-            const err = new httpError(409, 50, 'already added to fev')
-            throw err;
+            await Fev.deleteOne({ user: req.user, beet: item._id })
+        } else {
+            const newFev = new Fev({
+                user: req.user,
+                beet: item._id
+            });
+
+            fevItem = await newFev.save();
         }
 
 
-        const newFev = new Fev({
-            user: req.user,
-            beet: item._id
-        });
 
-        await newFev.save();
 
-        return response.created(res, 'added', newFev);
+        return response.created(res, 'added', fevItem);
 
 
     } catch (err) {
