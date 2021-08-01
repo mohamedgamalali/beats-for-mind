@@ -90,6 +90,12 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
                 newBeet.image = newFileName.url;
                 await newBeet.save() ;
             }
+            if(data.audio!==''){
+                const saveToCloud = new saveImage(data.audio);
+                const newFileName = await saveToCloud.save() ;
+                newBeet.beet = newFileName.url;
+                await newBeet.save() ;
+            }
             if(data.imageCover!==''){
                 const saveToCloud = new saveImage(data.imageCover);
                 const newFileName = await saveToCloud.save() ;
