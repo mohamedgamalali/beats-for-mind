@@ -9,13 +9,13 @@ export default class saveImage {
 
     async save(audio: boolean = false) {
 
-        if (audio) {
-            let img = await cloudinary.uploader.upload_stream(this.path);
+        // if (audio) {
+            // let img = await cloudinary.uploader.upload_stream(this.path);
+            // return img;
+        // } else {
+            let img = await cloudinary.uploader.upload(this.path, { resource_type: "auto" });
             return img;
-        } else {
-            let img = await cloudinary.uploader.upload(this.path);
-            return img;
-        }
+        // }
     }
 
 }
