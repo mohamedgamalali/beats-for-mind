@@ -3,6 +3,7 @@ import response from '../../helpers/Response'
 import { validationResult } from 'express-validator'
 import Catigory, { catigory } from '../../models/catigory';
 import Beet, { beet } from '../../models/beet';
+import Down, { download } from '../../models/downloads';
 import { Types } from 'mongoose';
 import beetsData, { filesContainer } from '../../services/beetData';
 import saveImage from '../../services/cloudenary';
@@ -104,7 +105,12 @@ export async function download(req: Request, res: Response, next: NextFunction) 
 
                 //Transform stream which is zipping the input file
                 read.pipe(zip).pipe(write);
-                write.on('finish', (DDD: any) => {
+                write.on('finish', async(DDD: any) => {
+                    const newDown = new Down({
+                        user:req.query.user,
+                        beet:beetItem._id
+                    })
+                    await newDown.save();
                     res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
                 })
             })
@@ -121,7 +127,12 @@ export async function download(req: Request, res: Response, next: NextFunction) 
             var write = fs.createWriteStream(`${beetItem?.name}.gz`);
             //Transform stream which is zipping the input file
             read.pipe(zip).pipe(write);
-            write.on('finish', (DDD: any) => {
+            write.on('finish', async(DDD: any) => {
+                const newDown = new Down({
+                    user:req.query.user,
+                    beet:beetItem._id
+                })
+                await newDown.save();
                 res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
             })
 
