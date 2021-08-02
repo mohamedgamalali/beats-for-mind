@@ -6,6 +6,9 @@ import isAuth from '../../helpers/isAuthUser'
 
 const router = Router();
 
-router.get('/audio/:fileName', streamer.streamAudio);
+router.get('/audio/uploads/:fileName', streamer.streamAudio);
+
+router.get('/download/uploads/:fileName', streamer.download);
+
 
 export default router;
