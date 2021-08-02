@@ -96,7 +96,7 @@ export default class getDate {
                     f = true;
                 }
                 finalPeet.push({
-                    beet: item,
+                    beet: item.beet,
                     fev: f
                 });
             })
