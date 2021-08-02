@@ -77,7 +77,7 @@ export async function download(req: Request, res: Response, next: NextFunction) 
         const id: any = req.params.fileName;
         let actualPath: string;
 
-        const beetItem:any = await Beet.findById(id);
+        const beetItem: any = await Beet.findById(id);
 
 
 
@@ -105,12 +105,16 @@ export async function download(req: Request, res: Response, next: NextFunction) 
 
                 //Transform stream which is zipping the input file
                 read.pipe(zip).pipe(write);
-                write.on('finish', async(DDD: any) => {
-                    const newDown = new Down({
-                        user:req.query.user,
-                        beet:beetItem._id
-                    })
-                    await newDown.save();
+                write.on('finish', async (DDD: any) => {
+                    const d = await Down.findOne({ beet: beetItem._id })
+                    if (!d) {
+                        const newDown = new Down({
+                            user: "6106ce368400d50015d87e28",
+                            beet: beetItem._id
+                        })
+                        await newDown.save();
+                    }
+
                     res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
                 })
             })
@@ -127,12 +131,15 @@ export async function download(req: Request, res: Response, next: NextFunction) 
             var write = fs.createWriteStream(`${beetItem?.name}.gz`);
             //Transform stream which is zipping the input file
             read.pipe(zip).pipe(write);
-            write.on('finish', async(DDD: any) => {
-                const newDown = new Down({
-                    user:req.query.user,
-                    beet:beetItem._id
-                })
-                await newDown.save();
+            write.on('finish', async (DDD: any) => {
+                const d = await Down.findOne({ beet: beetItem._id })
+                    if (!d) {
+                        const newDown = new Down({
+                            user: "6106ce368400d50015d87e28",
+                            beet: beetItem._id
+                        })
+                        await newDown.save();
+                    }
                 res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
             })
 
