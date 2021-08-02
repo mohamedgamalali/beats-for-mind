@@ -18,6 +18,7 @@
     "@types/express-validator": "^3.0.0",
     "@types/fluent-ffmpeg": "^2.1.18",
     "@types/jsonwebtoken": "^8.5.4",
+    "@types/jszip": "^3.4.1",
     "@types/mongoose": "^5.11.97",
     "@types/multer": "^1.4.7",
     "@types/node": "^16.4.3",
@@ -29,6 +30,7 @@
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "jsonwebtoken": "^8.5.1",
+    "jszip": "^3.7.0",
     "multer": "^1.4.2",
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",
@@ -36,6 +38,7 @@
     "passport-google-plus-token": "^2.1.0",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5",
-    "validate-phone-number-node-js": "0.0.1"
+    "validate-phone-number-node-js": "0.0.1",
+    "zlib": "^1.0.5"
   }
 }

@@ -50,7 +50,9 @@ export type beet = {
     beet: string,
     duration: string,
     hide: boolean,
-    catigory:Types.ObjectId
+    catigory:Types.ObjectId,
+    plays:number,
+    downloads:number
 }
 
 

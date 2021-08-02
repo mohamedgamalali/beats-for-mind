@@ -292,11 +292,31 @@ export default class Auth {
         }
     }
 
-    static async IsAuthrizedUser(req: Request, res: Response, next: NextFunction) {
+    static async getTokenQuery(req: Request) {
+        try {
+            const authHeader: any = req.query.token;
+
+            if (!authHeader) {
+                //regular error throw
+                const error = new httpError(401, 2, 'missed JWT header');
+                throw error;
+            }
+            return authHeader;
+        } catch (err) {
+            throw err ;
+        }
+    }
+
+    static async IsAuthrizedUser(req: Request, res: Response, next: NextFunction, q:boolean = false) {
         try {
             //get token
 
-            const token: string = await this.getToken(<Request>req);
+            let token:string ;
+            if(q){
+                token = await this.getTokenQuery(<Request>req);
+            }else{
+                token = await this.getToken(<Request>req);
+            } 
 
 
             //decode token
@@ -319,7 +339,7 @@ export default class Auth {
 
             req.user = decodedToken.id;
 
-            next();
+            return next();
         } catch (err) {
             next(err);
         }

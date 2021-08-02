@@ -8,27 +8,61 @@ import beetsData, { filesContainer } from '../../services/beetData';
 import saveImage from '../../services/cloudenary';
 import path from 'path';
 import fs from 'fs';
+import http from 'http';
+const got = require('got');
 const audioConverter = require('audio-converter');
+import isAuth from '../../helpers/isAuthUserQ'
+const zlib = require('zlib');
 
 export async function streamAudio(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const filePath: string = req.params.fileName;
 
-        const actualPath = path.join(__dirname, '/../../../uploads', filePath);
+        // try {
+        //     await isAuth(req, res, next);
+
+        // } catch (err) {
+        //     throw err;
+        // }
+
+        const id: any = req.params.fileName;
+        let actualPath: string;
+
+        const beetItem = await Beet.findById(id);
 
 
-        const state = fs.statSync(actualPath);
-        res.writeHead(200, {
-            'Content-Type': 'audio/mpeg',
-            'Content-Length': state.size
-        });
 
-        res.download(actualPath)
+        if (!beetItem) {
+            return response.NotFound(res, 'beat not found');
+        }
 
-        const readStream = fs.createReadStream(actualPath);
 
-        readStream.pipe(res);
+        if (beetItem?.beet.includes('http')) { // cloudinary url
+            actualPath = beetItem.beet;
+            beetItem.plays = beetItem.plays + 1;
+            await beetItem.save()
+            got.stream(actualPath).pipe(res);
+        } else {
+            actualPath = path.join(__dirname, '/../../../', <string>beetItem?.beet);
+            const state = fs.statSync(actualPath);
+            beetItem.plays = beetItem.plays + 1;
+            await beetItem.save()
+            res.writeHead(200, {
+                'Content-Type': 'audio/mpeg',
+                'Content-Length': state.size
+            });
+
+            // res.download(actualPath)
+
+            const readStream = fs.createReadStream(actualPath);
+
+            readStream.pipe(res);
+        }
+
+
+
+
+
 
     } catch (err) {
 
@@ -39,41 +73,63 @@ export async function streamAudio(req: Request, res: Response, next: NextFunctio
 export async function download(req: Request, res: Response, next: NextFunction) {
 
     try {
-        // const filePath: string = req.params.fileName;
+        const id: any = req.params.fileName;
+        let actualPath: string;
 
-        // const actualPath = path.join(__dirname, '/../../../uploads', filePath);
-
-
-        // const file = await ffmpeg().input(actualPath).outputFormat('wav').save('file.wav');
-
-        // console.log(file);
+        const beetItem:any = await Beet.findById(id);
 
 
-        // // ffmpeg(actualPath).toFormat('wav').on('error', err => {
-        // //     throw err;
-        // // }).on('progress', progress => {
-        // //     console.log(JSON.stringify(progress));
-        // //     console.log('Processing: ' + progress.targetSize + ' KB converted');
-        // // }).on('end', () => {
-        // //     console.log('Processing finished !');
-        // // }).save('./filePath.wav');
+
+        if (!beetItem) {
+            return response.NotFound(res, 'beat not found');
+        }
 
 
-        // const state = fs.statSync(path.join(__dirname, filePath));
-        // console.log(state);
+        if (beetItem?.beet.includes('http')) { // cloudinary url
+            actualPath = beetItem.beet;
+            beetItem.downloads = beetItem.downloads + 1;
+            await beetItem.save()
+            const file = fs.createWriteStream('file.mp3');
+            http.get(actualPath, function (response: any) {
+                response.pipe(file);
 
+            });
+            file.on('finish', async (r: any) => {
 
-        // res.download(path.join(__dirname, './', filePath));
+                const downloadedFile = path.join(__dirname, '/../../../', 'file.mp3')
+                var zip = zlib.createGzip();
 
+                var read = fs.createReadStream(downloadedFile);
+                var write = fs.createWriteStream(`${beetItem?.name}.gz`);
 
-        // const ffmpeg = require('fluent-ffmpeg');
+                //Transform stream which is zipping the input file
+                read.pipe(zip).pipe(write);
+                write.on('finish', (DDD: any) => {
+                    res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
+                })
+            })
 
-        const filePath: string = req.params.fileName;
+        } else {
+            actualPath = path.join(__dirname, '/../../../', <string>beetItem?.beet);
+            const state = fs.statSync(actualPath);
+            beetItem.downloads = beetItem.downloads + 1;
+            await beetItem.save()
 
-        const actualPath = path.join(__dirname, '/../../../uploads', filePath);
+            var zip = zlib.createGzip();
 
-        audioConverter()
-     
+            var read = fs.createReadStream(actualPath);
+            var write = fs.createWriteStream(`${beetItem?.name}.gz`);
+            //Transform stream which is zipping the input file
+            read.pipe(zip).pipe(write);
+            write.on('finish', (DDD: any) => {
+                res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
+            })
+
+            // const readStream = fs.createReadStream(actualPath);
+
+            // readStream.pipe(res);
+        }
+
     } catch (err) {
 
         next(err);

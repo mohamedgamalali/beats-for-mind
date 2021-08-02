@@ -99,6 +99,7 @@ export default (app: Application) => {
     });
     //admin
     // app.use('/admin', authAdmin);
+    app.use('/stream', streamController);
 
     app.use('/admin/music', musicAdmin);
 
@@ -116,7 +117,6 @@ export default (app: Application) => {
     // //user shop 
     // //authrization required
     app.use('/music', musicAuthRequired);
-    app.use('/stream', streamController);
 
     // app.use('/user/pay', userPay);
 
