@@ -29,7 +29,7 @@ passport.use('facebookToken', new facebookStrategy({
 
 passport.use('googleToken', new googlePlusToken({
     clientID:'95840003083-846fert97pdnrbimt2g4jgak4v9trqfl.apps.googleusercontent.com',
-    clientSecret: 'N_CrjLJwimFjZds-IDRiCU0n',
+    clientSecret: 'AIzaSyAO4G6BlXaiwAelk3DnyqFnEnlzc3v0toQ',
     passReqToCallback: true
 }, async (req:Request, accessToken:any, refreshToken:any, profile:Profile, done:any) => {
     try {
