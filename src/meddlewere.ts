@@ -12,6 +12,7 @@ import userAuth from './routes/user/auth'
 import errorHandler from './helpers/error'
 import path from 'path'
 import passAuth from './services/passport';
+import createCategory from './helpers/createCat';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -73,6 +74,7 @@ const fileFilter: any = (req: any, file: any, cb: any) => {
 
 export default (app: Application) => {
 
+    createCategory();
     //bodyParser
     app.use(bodyParser.json());
     //passport

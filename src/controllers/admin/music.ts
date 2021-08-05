@@ -35,7 +35,6 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
 
     try {
         const name: string = req.body.name;
-        const catigory: Types.ObjectId = req.body.catigoryId;
         const images: any = req.files;
         let imagePath: string;
         let coverImagePath: string;
@@ -66,7 +65,7 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             coverImagePath = data.imageCover ;
         }
 
-        const cat = await Catigory.findById(catigory)
+        const cat = await Catigory.findOne({name:'general'});
         if(!cat){
             return response.NotFound(res, 'catigory not found')
         }

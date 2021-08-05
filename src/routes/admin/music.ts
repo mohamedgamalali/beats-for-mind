@@ -13,10 +13,7 @@ router.put('/catigory', [
 router.post('/beet', [
     body('name')
     .not().isEmpty()
-    .trim(),
-    body('catigoryId')
-    .not().isEmpty()
-    .trim(),
+    .trim()
 ], musicController.adddBeet);
 
 
