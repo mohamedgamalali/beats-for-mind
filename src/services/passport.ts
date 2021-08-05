@@ -2,7 +2,7 @@ import passport from 'passport';
 
 import facebookStrategy, { Profile } from 'passport-facebook-token';
 
-const googlePlusToken = require('passport-google-plus-token');
+const googlePlusToken = require('passport-google-token').Strategy;
 
 import { Request } from 'express'
 import User from '../models/user';
@@ -29,7 +29,7 @@ passport.use('facebookToken', new facebookStrategy({
 
 passport.use('googleToken', new googlePlusToken({
     clientID:'95840003083-846fert97pdnrbimt2g4jgak4v9trqfl.apps.googleusercontent.com',
-    clientSecret: 'AIzaSyAO4G6BlXaiwAelk3DnyqFnEnlzc3v0toQ',
+    clientSecret: 'N_CrjLJwimFjZds-IDRiCU0n',
     passReqToCallback: true
 }, async (req:Request, accessToken:any, refreshToken:any, profile:Profile, done:any) => {
     try {
