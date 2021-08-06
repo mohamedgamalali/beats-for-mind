@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema, Document, Types } from 'mongoose'
 
 
 const userSchema: Schema = new Schema({
@@ -61,11 +61,22 @@ const userSchema: Schema = new Schema({
         type: Boolean,
         default: false
     },
-    verfied:{
+    verfied: {
+        type: Boolean,
+        default: false
+    },
+    stripeId: String,
+    plan: {
+        plan: {
+            type: Schema.Types.ObjectId,
+            ref: 'plan'
+        },
+        subscription_id:String
+    },
+    gotOneTimePlan:{
         type:Boolean,
         default:false
-    },
-    stripeId:String
+    }
 });
 
 export type user = {
@@ -74,7 +85,7 @@ export type user = {
         email: string
         password: string,
         first_name: string,
-        last_name:string
+        last_name: string
     },
     google: {
         id: string,
@@ -90,8 +101,13 @@ export type user = {
     },
     mobile: string,
     blocked: boolean,
-    verfied:boolean,
-    stripeId:string
+    verfied: boolean,
+    stripeId: string,
+    plan:{
+        plan:Types.ObjectId,
+        subscription_id:string
+    },
+    gotOneTimePlan:boolean
 }
 
 

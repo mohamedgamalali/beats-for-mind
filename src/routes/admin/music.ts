@@ -24,6 +24,10 @@ router.delete('/beat', [
     .not().isEmpty()
 ], isAuth, musicController.hideBeet);
 
+//users
+
+
+router.get('/users', isAuth, musicController.getUsers);
 
 
 

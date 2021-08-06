@@ -8,7 +8,7 @@ import musicAuthRequired from './routes/user/music'
 import streamController from './routes/stream/stream'
 import userAuth from './routes/user/auth'
 // import userShopAuth from './routes/user/auth_required_shop'
-// import userPay from './routes/user/pay'
+import userPay from './routes/user/pay'
 import errorHandler from './helpers/error'
 import path from 'path'
 import passAuth from './services/passport';
@@ -96,6 +96,9 @@ export default (app: Application) => {
 
     // //user auth
     app.use('/user/auth', userAuth);
+
+    //user pay
+    app.use('/user/pay', userPay);
 
     // //user shop 
     // //authrization required

@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import response from '../../helpers/Response'
 import { validationResult } from 'express-validator'
 import Catigory, { catigory } from '../../models/catigory';
+import User, { user } from '../../models/user';
 import Beet, { beet } from '../../models/beet';
 import { Types } from 'mongoose';
 import beetsData, { filesContainer } from '../../services/beetData';
-import saveImage from '../../services/cloudenary' ;
-import getData, {getBeet} from '../../services/getData';
+import saveImage from '../../services/cloudenary';
+import getData, { getBeet } from '../../services/getData';
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -60,14 +61,14 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
         if (data.image == '') {
             return response.ValidationFaild(res, 'you should at least insert beet image')
         }
-        if(data.imageCover == ''){
-            coverImagePath = data.image ;
-        }else{
-            coverImagePath = data.imageCover ;
+        if (data.imageCover == '') {
+            coverImagePath = data.image;
+        } else {
+            coverImagePath = data.imageCover;
         }
 
-        const cat = await Catigory.findOne({name:'general'});
-        if(!cat){
+        const cat = await Catigory.findOne({ name: 'general' });
+        if (!cat) {
             return response.NotFound(res, 'catigory not found')
         }
         console.log(coverImagePath);
@@ -80,37 +81,37 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
             beet: data.audio,
             catigory: cat?._id
         })
-        
-        await newBeet.save() ;
 
-        if(process.env.stage == 'test'){
-            if(data.image!==''){
+        await newBeet.save();
+
+        if (process.env.stage == 'test') {
+            if (data.image !== '') {
                 const saveToCloud = new saveImage(data.image);
-                const newFileName = await saveToCloud.save() ;
+                const newFileName = await saveToCloud.save();
                 newBeet.image = newFileName.url;
-                await newBeet.save() ;
+                await newBeet.save();
             }
-            if(data.audio!==''){
+            if (data.audio !== '') {
                 const saveToCloud = new saveImage(data.audio);
-                const newFileName = await saveToCloud.save(true) ;
+                const newFileName = await saveToCloud.save(true);
                 newBeet.beet = newFileName.url;
-                await newBeet.save() ;
+                await newBeet.save();
             }
-            if(data.imageCover!==''){
+            if (data.imageCover !== '') {
                 const saveToCloud = new saveImage(data.imageCover);
-                const newFileName = await saveToCloud.save() ;
+                const newFileName = await saveToCloud.save();
                 newBeet.coverImage = newFileName.url;
-                await newBeet.save() ;
+                await newBeet.save();
             }
-            if(data.imageCover == ''){
-                newBeet.coverImage = newBeet.image ;
-                await newBeet.save() ;
+            if (data.imageCover == '') {
+                newBeet.coverImage = newBeet.image;
+                await newBeet.save();
             }
         }
 
 
         return response.created(res, 'catigory created', {
-            beet:newBeet
+            beet: newBeet
         });
 
     } catch (err) {
@@ -135,7 +136,7 @@ export async function getBeets(req: Request, res: Response, next: NextFunction) 
 
     } catch (err) {
         console.log(err);
-        
+
         next(err);
     }
 }
@@ -143,8 +144,8 @@ export async function getBeets(req: Request, res: Response, next: NextFunction) 
 export async function hideBeet(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const beatId:Types.ObjectId = req.body.id ;
-        
+        const beatId: Types.ObjectId = req.body.id;
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return response.ValidationFaild(res, 'validation faild', errors.array())
@@ -152,21 +153,46 @@ export async function hideBeet(req: Request, res: Response, next: NextFunction) 
 
         const beat = await Beet.findById(beatId).select('hide')
 
-        if(!beat){
+        if (!beat) {
             return response.NotFound(res, 'beat not found');
         }
-        
-        beat.hide = true ;
 
-        await beat.save() ;
+        beat.hide = true;
+
+        await beat.save();
 
         return response.ok(res, 'beat deleted', {
-            beat:beat
+            beat: beat
         })
 
     } catch (err) {
         console.log(err);
+
+        next(err);
+    }
+}
+
+export async function getUsers(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const page = req.body.page || 1;
+
+        const users = await User.find({})
+            .select('-local.password')
+            .skip((page - 1) * 10)
+            .limit(10);
         
+        const total = await User.find().countDocuments() ;
+
+        return response.ok(res, 'users', {
+            users:users,
+            total:total
+        });
+        
+
+    } catch (err) {
+        console.log(err);
+
         next(err);
     }
 }

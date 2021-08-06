@@ -1,7 +1,7 @@
 //409
-1000 ===> out of stock product
-1001 ===> deleted product
-1009 ===> other errors
+1000 ===> already in a plan
+1001 ===> can't do one time plan more than once
+1009 ===> 
 //402
 1002 ===> StripeCardError
 1003 ===> StripeRateLimitError

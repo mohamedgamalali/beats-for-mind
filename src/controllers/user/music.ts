@@ -7,6 +7,8 @@ import Beet, { beet } from '../../models/beet';
 import getData, { getBeet } from '../../services/getData'
 import { Types } from 'mongoose';
 import Fev from '../../models/fev';
+import {beforePay} from '../../services/pay'
+import User from '../../models/user';
 
 export async function getBeets(req: Request, res: Response, next: NextFunction) {
 
@@ -17,12 +19,21 @@ export async function getBeets(req: Request, res: Response, next: NextFunction) 
         const catigory: any = req.query.catigory;
         const tap: any = req.query.tap || 'home';       //home || fev || downloads
         const searchQ = req.query.searchQ || false;
-
+        let plan = false ;
         const get = new getData(page);
 
         const beets: getBeet = await get.Beets(tap, type, searchQ, <Types.ObjectId>req.user, catigory);
 
-        return response.ok(res, `beets sorted with ${beets.sortField}`, { ...beets })
+        if(req.user){
+            const user = await User.findById(req.user).select('plan');
+
+            if(user?.plan.subscription_id){
+                plan = await beforePay.checkSubscription(user?.plan.subscription_id)
+            }
+
+        }
+
+        return response.ok(res, `beets sorted with ${beets.sortField}`, { ...beets, plan:plan })
 
 
 
