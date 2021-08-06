@@ -35,7 +35,7 @@ router.put('/regester/google', passport.authenticate('googleToken', { session: f
 
 router.post('/login', [
     body('emailOrMobile')
-        .not().isEmpty(),
+        .not().isEmpty().trim(),
     body('password', 'enter a password with only number and text and at least 5 characters.')
         .isLength({ min: 5 })
         .trim(),

@@ -3,6 +3,7 @@ import { sign, verify } from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express';
 import httpError from './httpError'
 import User from '../models/user'
+import Admin from '../models/admin'
 import { Profile } from 'passport-facebook-token'
 
 //create new object in request
@@ -371,6 +372,33 @@ export default class Auth {
             return true;
         } catch (err) {
             throw err;
+        }
+    }
+
+    static async IsAuthrizedAdmin(req: any, res: Response, next: NextFunction) {
+        try {
+            //get token
+
+            const token: string = await this.getToken(<Request>req);
+
+
+            //decode token
+            const decodedToken: Token = await this.verifyToken(token, <string>process.env.JWT_PRIVATE_KEY_ADMIN);
+
+            //check for admin
+            const admin = await Admin.findById(decodedToken.id);
+
+            if (!admin) {
+                //regular error throw
+                const error = new httpError(404, 2, 'admin not found');
+                throw error;
+            }
+
+            req.user = decodedToken.id;
+
+            next();
+        } catch (err) {
+            next(err);
         }
     }
 

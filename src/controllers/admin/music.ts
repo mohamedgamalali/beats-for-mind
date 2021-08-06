@@ -6,6 +6,7 @@ import Beet, { beet } from '../../models/beet';
 import { Types } from 'mongoose';
 import beetsData, { filesContainer } from '../../services/beetData';
 import saveImage from '../../services/cloudenary' ;
+import getData, {getBeet} from '../../services/getData';
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -114,6 +115,58 @@ export async function adddBeet(req: Request, res: Response, next: NextFunction) 
 
     } catch (err) {
 
+        next(err);
+    }
+}
+
+export async function getBeets(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const type: any = req.query.sort || 1;
+        const page: any = req.query.page || 1;
+        const catigory: any = req.query.catigory;
+        const searchQ = req.query.searchQ || false;
+
+        const get = new getData(page);
+
+        const beets: getBeet = await get.Beets('home', type, searchQ, <Types.ObjectId>req.user, catigory);
+
+        return response.ok(res, `beets sorted with ${beets.sortField}`, { ...beets })
+
+    } catch (err) {
+        console.log(err);
+        
+        next(err);
+    }
+}
+
+export async function hideBeet(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const beatId:Types.ObjectId = req.body.id ;
+        
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+        const beat = await Beet.findById(beatId).select('hide')
+
+        if(!beat){
+            return response.NotFound(res, 'beat not found');
+        }
+        
+        beat.hide = true ;
+
+        await beat.save() ;
+
+        return response.ok(res, 'beat deleted', {
+            beat:beat
+        })
+
+    } catch (err) {
+        console.log(err);
+        
         next(err);
     }
 }

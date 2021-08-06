@@ -1,7 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import multer from 'multer';
-// import authAdmin from './routes/admin/auth'
+import authAdmin from './routes/admin/auth'
 // import adminUser from './routes/admin/user'
 import musicAdmin from './routes/admin/music'
 import musicAuthRequired from './routes/user/music'
@@ -12,7 +12,7 @@ import userAuth from './routes/user/auth'
 import errorHandler from './helpers/error'
 import path from 'path'
 import passAuth from './services/passport';
-import createCategory from './helpers/createCat';
+import createElements from './helpers/createElements';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -36,7 +36,6 @@ const fileStorage = multer.diskStorage({
 
 const fileFilter: any = (req: any, file: any, cb: any) => {
     const mint = file.mimetype.split('/')
-    console.log(mint);
 
     if (mint[1] === 'png' ||
         mint[1] === 'jpg' ||
@@ -50,31 +49,12 @@ const fileFilter: any = (req: any, file: any, cb: any) => {
     }
 }
 
-// const fileStorageBeets = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads/beets');
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, new Date().toISOString() + '-' + file.originalname);
-//     }
-// });
 
-
-
-
-// const fileFilterBeets: any = (req: any, file: any, cb: any) => {
-//     if (file.mimetype === 'audio/wav' ||
-//         file.mimetype === 'audio/mp3' ) {
-//         cb(null, true);
-//     } else {
-//         cb(null, false, new Error('only audio are allowed'));
-//     }
-// }
 
 
 export default (app: Application) => {
 
-    createCategory();
+    createElements();
     //bodyParser
     app.use(bodyParser.json());
     //passport
@@ -104,6 +84,7 @@ export default (app: Application) => {
     app.use('/stream', streamController);
 
     app.use('/admin/music', musicAdmin);
+    app.use('/admin', authAdmin);
 
     // app.use('/admin/user', adminUser);
 
