@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as authController from '../../controllers/user/auth';
 import { body } from 'express-validator'
 import passport from 'passport'
-
+import isAuthVerify from '../../helpers/isAuthVerify';
 const router = Router();
 
 router.put('/regester', [
@@ -42,7 +42,17 @@ router.post('/login', [
 ], authController.localLogin)
 
 
+//verify
 
+router.post('/verify/send', [
+    body('method')
+        .not().isEmpty(),
+],isAuthVerify , authController.send)
+
+router.post('/verify/check', [
+    body('code')
+        .not().isEmpty(),
+],isAuthVerify , authController.check)
 
 
 export default router;

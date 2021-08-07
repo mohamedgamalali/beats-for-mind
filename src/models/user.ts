@@ -76,7 +76,9 @@ const userSchema: Schema = new Schema({
     gotOneTimePlan:{
         type:Boolean,
         default:false
-    }
+    },
+    verficationCode:String,
+    codeExpireDate:Number
 });
 
 export type user = {
@@ -107,7 +109,9 @@ export type user = {
         plan:Types.ObjectId,
         subscription_id:string
     },
-    gotOneTimePlan:boolean
+    gotOneTimePlan:boolean,
+    verficationCode:string,
+    codeExpireDate:number
 }
 
 

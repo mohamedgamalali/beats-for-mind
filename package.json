@@ -25,6 +25,7 @@
     "@types/passport": "^1.0.7",
     "@types/passport-facebook-token": "^0.4.35",
     "@types/stripe": "^8.0.417",
+    "@types/twilio": "^3.19.3",
     "audio-converter": "^1.0.13",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.2",
@@ -41,6 +42,7 @@
     "passport-google-token": "^0.1.2",
     "stripe": "^8.168.0",
     "ts-node": "^10.1.0",
+    "twilio": "^3.66.1",
     "typescript": "^4.3.5",
     "validate-phone-number-node-js": "0.0.1",
     "zlib": "^1.0.5"

@@ -184,6 +184,13 @@ export default class Auth {
                 throw err;
             }
 
+            if (!profile.displayName) {
+                const err = new httpError(422, 7, "looks like you are trying to login with facebook token does not have an profile access")
+                throw err;
+            }
+
+            
+            
 
             //this method works for social media "facebook, google" with merging accounts, login or regestration
             if (method == 'facebook') {
@@ -222,7 +229,8 @@ export default class Auth {
                         email: profile.emails[0].value,
                         name: profile.displayName,
                         photo: profile.photos[0].value
-                    }
+                    },
+                    verfied:true
                 });
 
                 const newClientFacebook = await newUser.save();
@@ -268,8 +276,9 @@ export default class Auth {
                         id: profile.id,
                         email: profile.emails[0].value,
                         name: profile.displayName,
-                        photo: profile.photos[0].value
-                    }
+                        photo: profile._json.picture
+                    },
+                    verfied:profile._json.verified_email
                 });
 
                 const newClientGoogle = await newUser.save();
@@ -285,6 +294,8 @@ export default class Auth {
 
 
         } catch (err) {
+            console.log(err);
+            
             if (!err.status) {
                 err.status = 500;
                 err.state = 0
@@ -335,6 +346,56 @@ export default class Auth {
             if (user.blocked == true) {
                 //regular error throw
                 const error = new httpError(403, 4, 'user blocked');
+                throw error;
+            }
+
+            if (user.verfied == false) {
+                //regular error throw
+                const error = new httpError(403, 5, 'you need to verify your account');
+                throw error;
+            }
+
+            req.user = decodedToken.id;
+
+            return next();
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async IsAuthrizedUserVerify(req: Request, res: Response, next: NextFunction, q:boolean = false) {
+        try {
+            //get token
+
+            let token:string ;
+            if(q){
+                token = await this.getTokenQuery(<Request>req);
+            }else{
+                token = await this.getToken(<Request>req);
+            } 
+
+
+            //decode token
+            const decodedToken: Token = await this.verifyToken(token, <string>process.env.JWT_PRIVATE_KEY_USER);
+
+            //check for admin
+            const user = await User.findById(decodedToken.id);
+
+            if (!user) {
+                //regular error throw
+                const error = new httpError(404, 2, 'user not found');
+                throw error;
+            }
+
+            if (user.blocked == true) {
+                //regular error throw
+                const error = new httpError(403, 4, 'user blocked');
+                throw error;
+            }
+
+            if (user.verfied == true) {
+                //regular error throw
+                const error = new httpError(403, 5, 'already verified');
                 throw error;
             }
 

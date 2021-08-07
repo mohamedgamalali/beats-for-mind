@@ -33,6 +33,7 @@ passport.use('googleToken', new googlePlusToken({
     passReqToCallback: true
 }, async (req:Request, accessToken:any, refreshToken:any, profile:Profile, done:any) => {
     try {
+        
 
         const result = await Auth.regesterSocialMedia(profile, 'google', req);
         return done(null, result);

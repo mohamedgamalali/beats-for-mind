@@ -29,6 +29,13 @@ router.delete('/beat', [
 
 router.get('/users', isAuth, musicController.getUsers);
 
+//send sms
+router.post('/user/send/sms', [
+    body('userId')
+    .not().isEmpty(),
+    body('message')
+    .not().isEmpty()
+], isAuth, musicController.sendSMS);
 
 
 export default router;

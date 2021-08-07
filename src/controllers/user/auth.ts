@@ -3,6 +3,9 @@ import response from '../../helpers/Response'
 import Auth, { Token } from '../../helpers/isAuth'
 import { validationResult } from 'express-validator'
 import authServices from '../../services/auth'
+import SMS from '../../services/sms'
+import Verify from '../../services/verfication'
+import {Types} from 'mongoose'
 
 const mobileValidator = require('validate-phone-number-node-js')
 
@@ -91,6 +94,72 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
             res,
              'logged in successfully',
              {...token});
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+//verfication
+export async function send(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const method = req.body.method ;
+        let message;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+
+        if(method== 'email'){
+            
+        }else if(method == 'mobile'){
+            const sms = new SMS(<string>process.env.TWILIO_ACCOUNT_SID, <string>process.env.TWILIO_AUTH_TOKEN)
+            
+            const verify = new Verify(<Types.ObjectId>req.user)
+
+            const codeGenerator = await verify.generateCode()
+
+            // const result = await sms.send(codeGenerator.message, <string>codeGenerator.mobile);
+            message = codeGenerator.message ;
+        }
+
+        return response.ok(res, 'code sent to clien', {
+            method:method,
+            code:message
+        });
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+export async function check(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const code = req.body.code ;
+        let message;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+
+        const verify = new Verify(<Types.ObjectId>req.user)
+
+        const checker = await verify.check(code);
+
+        return response.ok(res, 'ok',{
+            result:checker
+        });
+
 
     } catch (err) {
 

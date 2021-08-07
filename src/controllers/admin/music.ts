@@ -8,6 +8,7 @@ import { Types } from 'mongoose';
 import beetsData, { filesContainer } from '../../services/beetData';
 import saveImage from '../../services/cloudenary';
 import getData, { getBeet } from '../../services/getData';
+import SMS from '../../services/sms';
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -188,6 +189,43 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
             users:users,
             total:total
         });
+        
+
+    } catch (err) {
+        console.log(err);
+
+        next(err);
+    }
+}
+
+
+export async function sendSMS(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const userId = req.body.userId ;
+        const body   = req.body.message ;
+        const errors = validationResult(req);
+        
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+        const user = await User.findById(userId) ;
+
+        if(user?.method !== 'local'){
+            return response.Conflict(res, `can't send message to user with facebook or google account`)
+        }
+        
+        
+        const sms = new SMS(<string>process.env.TWILIO_ACCOUNT_SID, <string>process.env.TWILIO_AUTH_TOKEN)
+       
+        const result = await sms.send(body, <string>user?.mobile);
+
+        return response.ok(res, 'message send', {message:{
+            body:body,
+            to:<string>user?.mobile
+        }});
+       
         
 
     } catch (err) {
