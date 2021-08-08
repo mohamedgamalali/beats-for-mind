@@ -37,5 +37,16 @@ router.post('/user/send/sms', [
     .not().isEmpty()
 ], isAuth, musicController.sendSMS);
 
+//user downloads 
+
+router.post('/user/downloads', [
+    body('userId')
+    .not().isEmpty(),
+    body('type')
+    .not().isEmpty(),
+    body('amount')
+    .not().isEmpty()
+], isAuth, musicController.userDownloads );
+
 
 export default router;

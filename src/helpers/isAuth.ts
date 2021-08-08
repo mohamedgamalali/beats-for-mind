@@ -14,7 +14,7 @@ export interface IGetUserAuthInfoRequest extends Request {
 //token type
 export type Token = {
     email: string,
-    id: string,
+    id: string
 } | any;
 
 export default class Auth {

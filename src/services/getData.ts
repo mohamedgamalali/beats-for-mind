@@ -74,7 +74,7 @@ export default class getDate {
             })
         } else if (tap == 'downloads') {
 
-            beets = await Download.find(/*{ user: userId* }*/)
+            beets = await Download.find({ user: userId })
                 .select('beet')
                 .sort([[sortFields[quiry], -1]])
                 .skip((this.page - 1) * this.itemPerPage)
@@ -83,7 +83,7 @@ export default class getDate {
                     path: 'beet',
                     select: 'name image coverImage beet hide createdAt'
                 })
-            total = await Download.find(/*{ user: userId }*/).countDocuments();
+            total = await Download.find({ user: userId }).countDocuments();
 
             const favorites: any = await Fev.find({ user: userId });
             finalPeet = []

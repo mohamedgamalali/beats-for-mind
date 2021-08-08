@@ -78,7 +78,15 @@ const userSchema: Schema = new Schema({
         default:false
     },
     verficationCode:String,
-    codeExpireDate:Number
+    codeExpireDate:Number,
+    downloadsPerDay:{
+        type:Number,
+        default:0
+    },
+    freeDownloads:{
+        type:Number,
+        default:0
+    }
 });
 
 export type user = {
@@ -111,7 +119,9 @@ export type user = {
     },
     gotOneTimePlan:boolean,
     verficationCode:string,
-    codeExpireDate:number
+    codeExpireDate:number,
+    downloadsPerDay:number,
+    freeDownloads:number
 }
 
 

@@ -143,7 +143,6 @@ export default class stripePay {
 
 
             } catch (err1) {
-                console.log(err1.raw);
 
                 await errorHandler(err1.raw);
             }
@@ -156,6 +155,7 @@ export default class stripePay {
                 if (plan.interval == 'day') {
                     user.gotOneTimePlan = true;
                 }
+                user.downloadsPerDay = 3 ;
             }
 
             await user?.save();

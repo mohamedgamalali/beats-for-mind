@@ -176,20 +176,24 @@ export async function hideBeet(req: Request, res: Response, next: NextFunction) 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const page = req.body.page || 1;
+        const page:any = req.query.page || 1;
+
+        const perPage = 10 ;
+
+
 
         const users = await User.find({})
-            .select('-local.password')
-            .skip((page - 1) * 10)
-            .limit(10);
-        
-        const total = await User.find().countDocuments() ;
+            .select('-local.password -codeExpireDate -verficationCode')
+            .skip((page - 1) * perPage)
+            .limit(perPage);
+
+        const total = await User.find().countDocuments();
 
         return response.ok(res, 'users', {
-            users:users,
-            total:total
+            users: users,
+            total: total
         });
-        
+
 
     } catch (err) {
         console.log(err);
@@ -202,31 +206,78 @@ export async function getUsers(req: Request, res: Response, next: NextFunction) 
 export async function sendSMS(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const userId = req.body.userId ;
-        const body   = req.body.message ;
+        const userId = req.body.userId;
+        const body = req.body.message;
         const errors = validationResult(req);
-        
+
         if (!errors.isEmpty()) {
             return response.ValidationFaild(res, 'validation faild', errors.array())
         }
 
-        const user = await User.findById(userId) ;
+        const user = await User.findById(userId);
 
-        if(user?.method !== 'local'){
+        if (user?.method !== 'local') {
             return response.Conflict(res, `can't send message to user with facebook or google account`)
         }
-        
-        
+
+
         const sms = new SMS(<string>process.env.TWILIO_ACCOUNT_SID, <string>process.env.TWILIO_AUTH_TOKEN)
-       
+
         const result = await sms.send(body, <string>user?.mobile);
 
-        return response.ok(res, 'message send', {message:{
-            body:body,
-            to:<string>user?.mobile
-        }});
-       
+        return response.ok(res, 'message send', {
+            message: {
+                body: body,
+                to: <string>user?.mobile
+            }
+        });
+
+
+
+    } catch (err) {
+        console.log(err);
+
+        next(err);
+    }
+}
+
+
+export async function userDownloads(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const userId = req.body.userId;
+        const type = req.body.type;  // per-day || free
+        const amount = req.body.amount;
+
+        const errors = validationResult(req);
         
+
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+
+        if(amount<0){
+            return response.ValidationFaild(res, 'validation faild for amount', amount)
+        }
+
+        const user = await User.findById(userId);
+
+        if(!user){
+            return response.NotFound(res, 'user not found', user);
+        }
+
+        if(type == 'per-day'){
+            user.downloadsPerDay = amount ;
+            await user?.save()
+        }else if(type == 'free'){
+            user.freeDownloads = amount ;
+            await user?.save() ;
+        }else{
+            return response.ValidationFaild(res, 'validation faild for type', type)
+        }
+
+        return response.ok(res, `amount changed with type ${type}`, amount) ;
+
 
     } catch (err) {
         console.log(err);
