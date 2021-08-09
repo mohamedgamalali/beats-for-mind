@@ -86,7 +86,7 @@ export async function facebookAuth(req: Request, res: Response, next: NextFuncti
         return response.ok(res, 'OK', {
             token: {
                 ...token,
-                data
+                ...data
             },
             user: req.user
         });
@@ -121,7 +121,7 @@ export async function googleAuth(req: Request, res: Response, next: NextFunction
         return response.ok(res, 'OK', {
             token: {
                 ...token,
-                data
+                ...data
             },
             user: req.user
         });
