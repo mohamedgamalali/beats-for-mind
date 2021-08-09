@@ -9,15 +9,14 @@ export async function getPlans(req: Request, res: Response, next: NextFunction) 
 
     try {
 
-        let gotOneTimePlan:boolean|undefined = false ;
         const plans = await beforePay.createPlans() ;
+        let user:any ;
         if(req.user){
-            const user = await User.findById(req.user).select('gotOneTimePlan')
-            gotOneTimePlan = user?.gotOneTimePlan ;
+            user = await User.findById(req.user).select('gotOneTimePlan plan')
         }
         return response.ok(res, 'planes', {
             plans:plans,
-            gotOneTimePlan:gotOneTimePlan
+            user:user
         });
 
     } catch (err) {
