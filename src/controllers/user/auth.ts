@@ -7,7 +7,8 @@ import SMS from '../../services/sms'
 import Verify from '../../services/verfication'
 import { Types } from 'mongoose'
 import User, { user } from "../../models/user";
-import { beforePay } from '../../services/pay'
+import { beforePay } from '../../services/pay';
+import  Downloads from '../../services/downloadsHandler';
 
 const mobileValidator = require('validate-phone-number-node-js')
 
@@ -43,12 +44,16 @@ export async function regester(req: Request, res: Response, next: NextFunction) 
         }
         //
 
+        const d = new Downloads(user);
+
+        const countDownloads = await d.countDownloads();
+
 
         let date = {
             plan: checkPlan,
             verify: user?.verfied,
-            downloadsPerDay: user?.downloadsPerDay,
-            freeDownloads: user?.freeDownloads
+            downloadsPerDay: countDownloads.perDay,
+            freeDownloads: countDownloads.freeDownloads
         }
 
         return response.created(res, `account created with local method`, {
@@ -77,12 +82,18 @@ export async function facebookAuth(req: Request, res: Response, next: NextFuncti
         //
 
 
+        const d = new Downloads(<user>user);
+
+        const countDownloads = await d.countDownloads();
+
+
         let data = {
             plan: checkPlan,
             verify: user?.verfied,
-            downloadsPerDay: user?.downloadsPerDay,
-            freeDownloads: user?.freeDownloads
+            downloadsPerDay: countDownloads.perDay,
+            freeDownloads: countDownloads.freeDownloads
         }
+
         return response.ok(res, 'OK', {
             token: {
                 ...token,
@@ -111,12 +122,16 @@ export async function googleAuth(req: Request, res: Response, next: NextFunction
         }
         //
 
+        const d = new Downloads(<user>user);
+
+        const countDownloads = await d.countDownloads();
+
 
         let data = {
             plan: checkPlan,
             verify: user?.verfied,
-            downloadsPerDay: user?.downloadsPerDay,
-            freeDownloads: user?.freeDownloads
+            downloadsPerDay: countDownloads.perDay,
+            freeDownloads: countDownloads.freeDownloads
         }
         return response.ok(res, 'OK', {
             token: {
@@ -156,11 +171,16 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
         //
 
 
-        let date = {
+        const d = new Downloads(<user>user);
+
+        const countDownloads = await d.countDownloads();
+
+
+        let data = {
             plan: checkPlan,
             verify: user?.verfied,
-            downloadsPerDay: user?.downloadsPerDay,
-            freeDownloads: user?.freeDownloads
+            downloadsPerDay: countDownloads.perDay,
+            freeDownloads: countDownloads.freeDownloads
         }
 
         return response.ok(
@@ -168,7 +188,7 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
             'logged in successfully',
             {
                 ...token,
-                ...date
+                ...data
             });
 
     } catch (err) {

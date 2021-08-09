@@ -11,6 +11,7 @@ import saveImage from '../../services/cloudenary';
 import path from 'path';
 import fs, { read } from 'fs';
 import http from 'http';
+import downloadHandler from '../../services/downloadsHandler';
 const got = require('got');
 const audioConverter = require('audio-converter');
 const zlib = require('zlib');
@@ -29,10 +30,10 @@ export async function streamAudio(req: Request, res: Response, next: NextFunctio
         if (!beetItem) {
             return response.NotFound(res, 'beat not found');
         }
-        
-        if(req.user){
+
+        if (req.user) {
             if (beetItem?.beet.includes('http')) { // cloudinary url
-            
+
                 actualPath = beetItem.beet;
                 beetItem.plays = beetItem.plays + 1;
                 await beetItem.save()
@@ -47,11 +48,11 @@ export async function streamAudio(req: Request, res: Response, next: NextFunctio
                     'Content-Type': 'audio/mpeg',
                     'Content-Length': state.size
                 });
-    
+
                 const readStream = fs.createReadStream(actualPath);
-                
+
                 readStream.pipe(res);
-                
+
             }
         }
 
@@ -63,6 +64,29 @@ export async function streamAudio(req: Request, res: Response, next: NextFunctio
     }
 }
 
+export async function preDownload(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+
+        const user = await User.findById(req.user)
+
+        const D = new downloadHandler(<user>user);
+        const count = await D.countDownloads();
+
+        if (!(count.freeDownloads > 0 && count.perDay > 0)) {
+            return response.Forbidden(res, `can't download, no more downloads today or free beats`)
+        }
+
+        return response.ok(res, 'user can download', count)
+
+
+
+    } catch (err) {
+
+        next(err);
+    }
+}
 
 export async function download(req: Request, res: Response, next: NextFunction) {
 
@@ -78,10 +102,10 @@ export async function download(req: Request, res: Response, next: NextFunction) 
             return response.NotFound(res, 'beat not found');
         }
 
-        const user = await User.findById(req.user) ;
+        const user = await User.findById(req.user);
 
 
-        if (beetItem?.beet.includes('http')) { 
+        if (beetItem?.beet.includes('http')) {
             //cloudinary url
             actualPath = beetItem.beet;
             beetItem.downloads = beetItem.downloads + 1;
@@ -102,14 +126,9 @@ export async function download(req: Request, res: Response, next: NextFunction) 
                 //Transform stream which is zipping the input file
                 read.pipe(zip).pipe(write);
                 write.on('finish', async (DDD: any) => {
-                    const d = await Down.findOne({ beet: beetItem._id })
-                    if (!d) {
-                        const newDown = new Down({
-                            user: user?._id,
-                            beet: beetItem._id
-                        })
-                        await newDown.save();
-                    }
+
+                    const D = new downloadHandler(<user>user);
+                    await D.onDownload(beetItem._id);
 
                     res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
                 })
@@ -128,14 +147,8 @@ export async function download(req: Request, res: Response, next: NextFunction) 
             //Transform stream which is zipping the input file
             read.pipe(zip).pipe(write);
             write.on('finish', async (DDD: any) => {
-                const d = await Down.findOne({ beet: beetItem._id })
-                if (!d) {
-                    const newDown = new Down({
-                        user: "6106ce368400d50015d87e28",
-                        beet: beetItem._id
-                    })
-                    await newDown.save();
-                }
+                const D = new downloadHandler(<user>user);
+                await D.onDownload(beetItem._id);
                 res.download(path.join(__dirname, '/../../../', `${beetItem?.name}.gz`))
             })
 

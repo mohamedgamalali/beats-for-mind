@@ -17,7 +17,8 @@ const downloadsSchame: Schema = new Schema({
 
 export type download = {
     user:Types.ObjectId,
-    beet:Types.ObjectId
+    beet:Types.ObjectId,
+    createdAt:Date
 }
 
 

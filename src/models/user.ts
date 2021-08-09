@@ -90,6 +90,7 @@ const userSchema: Schema = new Schema({
 });
 
 export type user = {
+    _id:Types.ObjectId,
     method: string,
     local: {
         email: string
