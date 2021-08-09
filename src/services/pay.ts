@@ -289,6 +289,9 @@ export class beforePay {
                 subscription_id
             );
 
+            console.log(subscription);
+            
+
 
             if (subscription.status) {
 

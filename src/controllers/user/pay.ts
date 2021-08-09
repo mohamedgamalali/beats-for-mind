@@ -11,12 +11,15 @@ export async function getPlans(req: Request, res: Response, next: NextFunction) 
 
         const plans = await beforePay.createPlans() ;
         let user:any ;
+        let subscriptionStatus:any ;
         if(req.user){
             user = await User.findById(req.user).select('gotOneTimePlan plan')
+            subscriptionStatus = await beforePay.checkSubscription(user.plan.subscription_id);
         }
         return response.ok(res, 'planes', {
             plans:plans,
-            user:user
+            user:user,
+            subscriptionStatus:subscriptionStatus
         });
 
     } catch (err) {
