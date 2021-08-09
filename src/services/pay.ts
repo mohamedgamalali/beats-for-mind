@@ -278,10 +278,13 @@ export class beforePay {
             throw err;
         }
     }
-
+ 
     static async checkSubscription(subscription_id: string) {
         try {
 
+            if(!subscription_id){
+                return false ;
+            }
             const subscription = await stripe.subscriptions.retrieve(
                 subscription_id
             );

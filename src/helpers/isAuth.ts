@@ -14,7 +14,11 @@ export interface IGetUserAuthInfoRequest extends Request {
 //token type
 export type Token = {
     email: string,
-    id: string
+    id: string,
+    /*plan:object | boolean,
+    verify:boolean,
+    downloadsPerDay:number,
+    freeDownloads:number*/
 } | any;
 
 export default class Auth {
@@ -165,7 +169,11 @@ export default class Auth {
                 email: user.local.email
             }, <string>process.env.JWT_PRIVATE_KEY_USER)
 
-            return token;
+            return {
+                
+                token:token,
+                user:user
+            };
 
 
         } catch (err) {

@@ -5,7 +5,9 @@ import { validationResult } from 'express-validator'
 import authServices from '../../services/auth'
 import SMS from '../../services/sms'
 import Verify from '../../services/verfication'
-import {Types} from 'mongoose'
+import { Types } from 'mongoose'
+import User, { user } from "../../models/user";
+import { beforePay } from '../../services/pay'
 
 const mobileValidator = require('validate-phone-number-node-js')
 
@@ -32,7 +34,27 @@ export async function regester(req: Request, res: Response, next: NextFunction) 
 
         const result = await Auth.registerLocal(email, password, first_name, last_name, mobile);
 
-        return response.created(res, `account created with local method`, result);
+        //
+        const user = result.user;
+
+        let checkPlan = false;
+        if (user?.plan) {
+            checkPlan = await beforePay.checkSubscription(user?.plan.subscription_id)
+        }
+        //
+
+
+        let date = {
+            plan: checkPlan,
+            verify: user?.verfied,
+            downloadsPerDay: user?.downloadsPerDay,
+            freeDownloads: user?.freeDownloads
+        }
+
+        return response.created(res, `account created with local method`, {
+            ...result.token,
+            ...date
+        });
 
 
     } catch (err) {
@@ -46,10 +68,27 @@ export async function facebookAuth(req: Request, res: Response, next: NextFuncti
     try {
 
         const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
+        const user = await User.findById(req.user);
 
-        return response.ok(res, 'OK', { 
-            token: token, 
-            user: req.user 
+        let checkPlan = false;
+        if (user?.plan) {
+            checkPlan = await beforePay.checkSubscription(user?.plan.subscription_id)
+        }
+        //
+
+
+        let data = {
+            plan: checkPlan,
+            verify: user?.verfied,
+            downloadsPerDay: user?.downloadsPerDay,
+            freeDownloads: user?.freeDownloads
+        }
+        return response.ok(res, 'OK', {
+            token: {
+                ...token,
+                data
+            },
+            user: req.user
         });
 
     } catch (err) {
@@ -64,9 +103,27 @@ export async function googleAuth(req: Request, res: Response, next: NextFunction
 
         const token = await Auth.generateJWT(req.user, <string>process.env.JWT_PRIVATE_KEY_USER);
 
-        return response.ok(res, 'OK', { 
-            token: token, 
-            user: req.user 
+        const user = await User.findById(req.user);
+
+        let checkPlan = false;
+        if (user?.plan) {
+            checkPlan = await beforePay.checkSubscription(user?.plan.subscription_id)
+        }
+        //
+
+
+        let data = {
+            plan: checkPlan,
+            verify: user?.verfied,
+            downloadsPerDay: user?.downloadsPerDay,
+            freeDownloads: user?.freeDownloads
+        }
+        return response.ok(res, 'OK', {
+            token: {
+                ...token,
+                data
+            },
+            user: req.user
         });
 
     } catch (err) {
@@ -80,7 +137,7 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
     try {
 
         const emailOrMobile = req.body.emailOrMobile;
-        const password     = req.body.password;
+        const password = req.body.password;
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -88,12 +145,31 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
         }
 
 
-        const token:Token = await authServices.login(emailOrMobile, password, res, 'user', <string>process.env.JWT_PRIVATE_KEY_USER, req)
+        const token: Token = await authServices.login(emailOrMobile, password, res, 'user', <string>process.env.JWT_PRIVATE_KEY_USER, req)
+
+        const user = await User.findOne({ 'local.email': token.email });
+
+        let checkPlan = false;
+        if (user?.plan) {
+            checkPlan = await beforePay.checkSubscription(user?.plan.subscription_id)
+        }
+        //
+
+
+        let date = {
+            plan: checkPlan,
+            verify: user?.verfied,
+            downloadsPerDay: user?.downloadsPerDay,
+            freeDownloads: user?.freeDownloads
+        }
 
         return response.ok(
             res,
-             'logged in successfully',
-             {...token});
+            'logged in successfully',
+            {
+                ...token,
+                ...date
+            });
 
     } catch (err) {
 
@@ -106,7 +182,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const method = req.body.method ;
+        const method = req.body.method;
         let message;
 
         const errors = validationResult(req);
@@ -115,22 +191,22 @@ export async function send(req: Request, res: Response, next: NextFunction) {
         }
 
 
-        if(method== 'email'){
-            
-        }else if(method == 'mobile'){
+        if (method == 'email') {
+
+        } else if (method == 'mobile') {
             const sms = new SMS(<string>process.env.TWILIO_ACCOUNT_SID, <string>process.env.TWILIO_AUTH_TOKEN)
-            
+
             const verify = new Verify(<Types.ObjectId>req.user)
 
             const codeGenerator = await verify.generateCode()
 
             // const result = await sms.send(codeGenerator.message, <string>codeGenerator.mobile);
-            message = codeGenerator.message ;
+            message = codeGenerator.message;
         }
 
         return response.ok(res, 'code sent to clien', {
-            method:method,
-            code:message
+            method: method,
+            code: message
         });
 
     } catch (err) {
@@ -143,7 +219,7 @@ export async function check(req: Request, res: Response, next: NextFunction) {
 
     try {
 
-        const code = req.body.code ;
+        const code = req.body.code;
         let message;
 
         const errors = validationResult(req);
@@ -156,8 +232,8 @@ export async function check(req: Request, res: Response, next: NextFunction) {
 
         const checker = await verify.check(code);
 
-        return response.ok(res, 'ok',{
-            result:checker
+        return response.ok(res, 'ok', {
+            result: checker
         });
 
 
