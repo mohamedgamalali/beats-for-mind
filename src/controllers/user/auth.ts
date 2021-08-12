@@ -269,8 +269,8 @@ export async function forgetPassword(req: Request, res: Response, next: NextFunc
     try {
 
         const email = new EMAIL(<string> process.env.CLIENT_ID, <string> process.env.CLIENT_SECRET, <string> process.env.REFRESH_TOKEN, <string> process.env.EMAIL)
-        await email.send();
-        
+        await email.send('jdjdjd');
+
         return response.ok(res, 'code send', {
             code:'code'
         });

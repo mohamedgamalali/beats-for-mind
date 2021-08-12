@@ -54,5 +54,7 @@ router.post('/verify/check', [
         .not().isEmpty(),
 ],isAuthVerify , authController.check)
 
+//forget password
+router.post('/forget-password', authController.forgetPassword)
 
 export default router;

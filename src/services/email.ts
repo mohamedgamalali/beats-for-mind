@@ -14,24 +14,36 @@ export default class Email {
         this.REFRESH_TOKEN = REFRESH_TOKEN;
         this.CLIENT_ID = CLIENT_ID;
         this.EMAIL = EMAIL;
-        const oauth2Client = new OAuth2(
+        this.oauth2Client = new OAuth2(
             CLIENT_ID,
             CLIENT_SECRET,
             "https://developers.google.com/oauthplayground"
         );
+        // google.options({ auth: this.oauth2Client });
 
-        this.oauth2Client = oauth2Client.setCredentials({
-            refresh_token: REFRESH_TOKEN
-        });
+        // this.oauth2Client.setCredentials({
+        //     refresh_token: REFRESH_TOKEN
+        // });
     }
 
     private async generateAccessToken() {
         try {
+            
+            await this.oauth2Client.setCredentials({
+                refresh_token: this.REFRESH_TOKEN
+            });
+
+
             const token = await this.oauth2Client.getAccessToken();
+
+            console.log(token);
+
 
             return token;
 
         } catch (err) {
+            console.log(err);
+
             throw err;
         }
     }
@@ -48,6 +60,9 @@ export default class Email {
                     clientId: this.CLIENT_ID,
                     clientSecret: this.CLIENT_SECRET,
                     refreshToken: this.REFRESH_TOKEN
+                },
+                tls: {
+                    rejectUnauthorized: false
                 }
             });
 
@@ -58,19 +73,20 @@ export default class Email {
         }
     }
 
-    async send() {
+    async send(code:string) {
         try {
             const transporter = await this.createTransport();
 
             await transporter.sendMail({
                 subject: "Test",
-                text: "I am sending an email from nodemailer!",
+                text: `your verfication code is ${code}`,
                 to: "mohamedgamalali726@gmail.com",
                 from: `${this.EMAIL} beats for mind`
             });
 
 
         } catch (err) {
+
             throw err;
         }
     }
