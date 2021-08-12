@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as musicController from '../../controllers/admin/music';
 import { body } from 'express-validator'
 import isAuth from '../../helpers/isAuthAdmin'
+import isAuthQ from '../../helpers/isAuthAdminQ'
 
 const router = Router();
 
@@ -49,6 +50,6 @@ router.post('/user/downloads', [
 ], isAuth, musicController.userDownloads );
 
 //downloads users csv 
-router.get('/user/csv', isAuth, musicController.downloadCsvUsers );
+router.get('/user/csv', isAuthQ, musicController.downloadCsvUsers );
 
 export default router;

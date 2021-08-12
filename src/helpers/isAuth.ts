@@ -444,11 +444,16 @@ export default class Auth {
         }
     }
 
-    static async IsAuthrizedAdmin(req: any, res: Response, next: NextFunction) {
+    static async IsAuthrizedAdmin(req: any, res: Response, next: NextFunction, q:boolean = false) {
         try {
             //get token
+            let token:any;
+            if(!q){
+                token = await this.getToken(<Request>req);
+            }else{
+                token = await this.getTokenQuery(<Request>req);
 
-            const token: string = await this.getToken(<Request>req);
+            }
 
 
             //decode token
