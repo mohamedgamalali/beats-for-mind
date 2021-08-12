@@ -328,7 +328,7 @@ export async function downloadCsvUsers(req: Request, res: Response, next: NextFu
             }
         });
 
-        return res.download(path.join(__dirname, './users.csv'));
+        return res.sendFile(path.join(__dirname, './users.csv'))
 
 
     } catch (err) {
