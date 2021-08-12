@@ -10,7 +10,7 @@ import saveImage from '../../services/cloudenary';
 import getData, { getBeet } from '../../services/getData';
 import SMS from '../../services/sms';
 const csvjson = require('csvjson');
-import {writeFile} from 'fs'
+import {writeFile, writeFileSync} from 'fs'
 import path from 'path'
 
 
@@ -322,11 +322,7 @@ export async function downloadCsvUsers(req: Request, res: Response, next: NextFu
             headers: 'key'
         });
 
-        writeFile(path.join(__dirname, './users.csv'), fileData, (err)=>{
-            if(err){
-                throw err ;
-            }
-        });
+        writeFileSync(path.join(__dirname, './users.csv'), fileData);
 
         return res.download(path.join(__dirname, './users.csv'));
 

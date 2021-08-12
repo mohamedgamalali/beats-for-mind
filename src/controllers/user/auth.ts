@@ -4,6 +4,7 @@ import Auth, { Token } from '../../helpers/isAuth'
 import { validationResult } from 'express-validator'
 import authServices from '../../services/auth'
 import SMS from '../../services/sms'
+import EMAIL from '../../services/email'
 import Verify from '../../services/verfication'
 import { Types } from 'mongoose'
 import User, { user } from "../../models/user";
@@ -256,6 +257,23 @@ export async function check(req: Request, res: Response, next: NextFunction) {
             result: checker
         });
 
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+export async function forgetPassword(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const email = new EMAIL(<string> process.env.CLIENT_ID, <string> process.env.CLIENT_SECRET, <string> process.env.REFRESH_TOKEN, <string> process.env.EMAIL)
+        await email.send();
+        
+        return response.ok(res, 'code send', {
+            code:'code'
+        });
 
     } catch (err) {
 
