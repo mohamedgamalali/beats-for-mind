@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import response from '../../helpers/Response'
 import Auth, { Token } from '../../helpers/isAuth'
-import { validationResult } from 'express-validator'
+import { validationResult, check as normailze } from 'express-validator'
 import authServices from '../../services/auth'
 import SMS from '../../services/sms'
 import EMAIL from '../../services/email'
@@ -9,7 +9,8 @@ import Verify from '../../services/verfication'
 import { Types } from 'mongoose'
 import User, { user } from "../../models/user";
 import { beforePay } from '../../services/pay';
-import  Downloads from '../../services/downloadsHandler';
+import Downloads from '../../services/downloadsHandler';
+import { compare, hash } from 'bcryptjs'
 
 const mobileValidator = require('validate-phone-number-node-js')
 
@@ -161,6 +162,8 @@ export async function localLogin(req: Request, res: Response, next: NextFunction
         }
 
 
+
+
         const token: Token = await authServices.login(emailOrMobile, password, res, 'user', <string>process.env.JWT_PRIVATE_KEY_USER, req)
 
         const user = await User.findOne({ 'local.email': token.email });
@@ -211,17 +214,19 @@ export async function send(req: Request, res: Response, next: NextFunction) {
             return response.ValidationFaild(res, 'validation faild', errors.array())
         }
 
+        const verify = new Verify(<Types.ObjectId>req.user)
+
+        const codeGenerator = await verify.generateCode()
 
         if (method == 'email') {
+            const email = new EMAIL(<string>process.env.CLIENT_ID, <string>process.env.CLIENT_SECRET, <string>process.env.REFRESH_TOKEN, <string>process.env.EMAIL)
+
+            await email.send(codeGenerator.code, codeGenerator.email);
 
         } else if (method == 'mobile') {
             const sms = new SMS(<string>process.env.TWILIO_ACCOUNT_SID, <string>process.env.TWILIO_AUTH_TOKEN)
 
-            const verify = new Verify(<Types.ObjectId>req.user)
-
-            const codeGenerator = await verify.generateCode()
-
-            // const result = await sms.send(codeGenerator.message, <string>codeGenerator.mobile);
+            const result = await sms.send(codeGenerator.message, <string>codeGenerator.mobile);
             message = codeGenerator.message;
         }
 
@@ -268,11 +273,133 @@ export async function forgetPassword(req: Request, res: Response, next: NextFunc
 
     try {
 
-        const email = new EMAIL(<string> process.env.CLIENT_ID, <string> process.env.CLIENT_SECRET, <string> process.env.REFRESH_TOKEN, <string> process.env.EMAIL)
-        await email.send('jdjdjd');
+
+
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+        await normailze('email')
+            .isEmail()
+            .normalizeEmail().run(req);
+
+        const user = await User.findOne({ 'local.email': req.body.email })
+
+        if (!user) {
+            return response.NotFound(res, 'user not found');
+        }
+
+        const email = new EMAIL(<string>process.env.CLIENT_ID, <string>process.env.CLIENT_SECRET, <string>process.env.REFRESH_TOKEN, <string>process.env.EMAIL)
+        const verify = new Verify(<Types.ObjectId>user._id)
+
+        const codeGenerator = await verify.generateCode()
+
+        await email.send(codeGenerator.code, user.local.email);
 
         return response.ok(res, 'code send', {
-            code:'code'
+            code: 'code'
+        });
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+export async function forgetPasswordCodeCheck(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const code = req.body.code;
+        const email = req.body.email;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+        await normailze('email')
+            .isEmail()
+            .normalizeEmail().run(req);
+
+        const user = await User.findOne({ 'local.email': req.body.email })
+
+        if (!user) {
+            return response.NotFound(res, 'user not found');
+        }
+
+        const verify = new Verify(<Types.ObjectId>user._id)
+
+        const checker = await verify.check(code);
+
+        return response.ok(res, 'ok', {
+            result: checker
+        });
+
+    } catch (err) {
+
+        next(err);
+    }
+}
+
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+
+    try {
+
+        const code = req.body.code;
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return response.ValidationFaild(res, 'validation faild', errors.array())
+        }
+        await normailze('email')
+            .isEmail()
+            .normalizeEmail().run(req);
+
+        const user = await User.findOne({ 'local.email': req.body.email })
+
+        if (!user) {
+            return response.NotFound(res, 'user not found');
+        }
+
+        const verify = new Verify(<Types.ObjectId>user._id)
+
+        const checker = await verify.check(code);
+
+        const hasedPass = await hash(password, 12);
+
+        user.local.password = hasedPass;
+
+        await user.save();
+
+        const token = await Auth.generateJWT(user._id, <string>process.env.JWT_PRIVATE_KEY_USER);
+
+
+        let checkPlan = false;
+        if (user?.plan) {
+            checkPlan = await beforePay.checkSubscription(user?.plan.subscription_id)
+        }
+        //
+
+
+        const d = new Downloads(<user>user);
+
+        const countDownloads = await d.countDownloads();
+
+
+        let data = {
+            plan: checkPlan,
+            verify: user?.verfied,
+            downloadsPerDay: countDownloads.perDay,
+            freeDownloads: countDownloads.freeDownloads
+        }
+
+        return response.ok(res, 'password changed :)', {
+            ...token,
+            ...data,
+            user: req.user
         });
 
     } catch (err) {

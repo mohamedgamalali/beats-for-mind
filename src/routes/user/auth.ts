@@ -47,14 +47,43 @@ router.post('/login', [
 router.post('/verify/send', [
     body('method')
         .not().isEmpty(),
-],isAuthVerify , authController.send)
+], isAuthVerify, authController.send)
 
 router.post('/verify/check', [
     body('code')
         .not().isEmpty(),
-],isAuthVerify , authController.check)
+], isAuthVerify, authController.check)
 
 //forget password
-router.post('/forget-password', authController.forgetPassword)
+router.post('/forget-password', [
+    body('email')
+        .not().isEmpty().trim(),
+], authController.forgetPassword)
+
+router.post('/forget-password/check', [
+    body('email')
+        .not().isEmpty().trim(),
+    body('code')
+        .not().isEmpty(),
+], authController.forgetPasswordCodeCheck)
+
+router.post('/forget-password/change-password', [
+    body('email')
+        .not().isEmpty().trim(),
+    body('code')
+        .not().isEmpty(),
+    body('password', 'enter a password with only number and text and at least 5 characters.')
+        .isLength({ min: 5 })
+        .isAlphanumeric()
+        .trim(),
+    body('comfirmPassword')
+        .trim()
+        .custom((value, { req }) => {
+            if (value != req.body.password) {
+                return Promise.reject('password has to match');
+            }
+            return true;
+        }),
+], authController.changePassword)
 
 export default router;

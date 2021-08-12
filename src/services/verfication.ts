@@ -42,7 +42,7 @@ export default class verify {
                     break ;
             }
 
-            return { message, mobile: user?.mobile, email:email};
+            return { message, mobile: user?.mobile, email:email, code:code};
 
 
         } catch (err) {
@@ -64,7 +64,7 @@ export default class verify {
             }
 
             if (<number>user?.codeExpireDate <= Date.now()) {
-                const err = new httpError(403, 5, 'token expired')
+                const err = new httpError(403, 5, 'code expired')
                 throw err;
             }
 

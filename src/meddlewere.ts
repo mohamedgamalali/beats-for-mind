@@ -13,6 +13,7 @@ import errorHandler from './helpers/error'
 import path from 'path'
 import passAuth from './services/passport';
 import createElements from './helpers/createElements';
+import response from './helpers/Response';
 
 const cloudinary = require('cloudinary').v2;
 
@@ -61,6 +62,20 @@ export default (app: Application) => {
     app.use(passAuth.initialize());
     //multer image
     app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array('image'));
+
+    app.use(express.static(path.join(__dirname, 'templates')));
+
+    //block audio from static files
+    app.use('/uploads/:fileName',(req:Request, res:Response, next:NextFunction)=>{
+        const exicName = path.extname(req.params.fileName);
+        
+        if(exicName !='.png' && exicName !='.jpg' && exicName !='.jpeg'){
+            return response.unauthorized(res, "can't access audio files this way ya kosomak")
+        }
+        
+        next();
+    });
+
     app.use('/uploads', express.static(path.join(__dirname, '../', 'uploads')));
     //multer beet
     // app.use(multer({ storage: fileStorageBeets, fileFilter: fileFilterBeets }).array('beet'));

@@ -1,7 +1,8 @@
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 import nodeMailer from 'nodemailer';
-
+import ejs from 'ejs'
+import path from 'path'
 export default class Email {
     private oauth2Client: any;
     readonly CLIENT_ID: string;
@@ -36,7 +37,6 @@ export default class Email {
 
             const token = await this.oauth2Client.getAccessToken();
 
-            console.log(token);
 
 
             return token;
@@ -73,14 +73,28 @@ export default class Email {
         }
     }
 
-    async send(code:string) {
+    async send(code:string, to:string) {
         try {
             const transporter = await this.createTransport();
+            
+           
 
+            let finalCode ='' ;
+            for(let i = 0 ; i<code.length ;i++){
+                if(i%2==0){
+                    finalCode = finalCode + ' ' + code[i]
+                }else{
+                    finalCode = finalCode + code[i]
+                }
+            }
+            
+            const ejsFile = await ejs.renderFile(path.join(__dirname,'../templates/email-form.ejs'),{
+                code:finalCode,
+            });
             await transporter.sendMail({
-                subject: "Test",
-                text: `your verfication code is ${code}`,
-                to: "mohamedgamalali726@gmail.com",
+                subject: "beats for mind support",
+                html: ejsFile,
+                to: to,
                 from: `${this.EMAIL} beats for mind`
             });
 

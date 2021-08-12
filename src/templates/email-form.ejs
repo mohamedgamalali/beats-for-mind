@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation</title>
+    <style>
+        body {}
+
+        .table {
+            background-color: rgb(153, 63, 153);
+            background-size: 650px 1400px;
+            text-align: center;
+            width: 500px;
+            border: 1px gray solid;
+            padding: 70px;
+
+        }
+
+        .welcome {
+            font-size: 30px;
+            color: violet;
+            text-align: left;
+            background-color: thistle;
+            padding: 60px;
+
+        }
+
+        .info {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: thistle;
+            font-size: 40px;
+            font-variant: small-caps;
+        }
+
+        .btn {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            border-radius: 9px;
+            padding-right: 16px;
+            padding-left: 16px;
+            border-color: thistle;
+            background-color: transparent;
+            border-style: ridge;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            color: thistle;
+        }
+        span{
+            font-size: x-large;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="table">
+        <div class="welcome">
+            <nav>WELCOME TO BEATS OF MIND!</nav>
+        </div>
+        <div class="info">
+            <br>
+
+            Keep your account secure.
+            Confirm below and enjoy the music you love.
+        </div>
+        <br>
+        <br>
+        <div class="btn">
+            Your Verification Code is: <span><%=code%></span>
+        </div>
+    </div>
+</body>
+
+</html>
