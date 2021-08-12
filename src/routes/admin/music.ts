@@ -48,5 +48,7 @@ router.post('/user/downloads', [
     .not().isEmpty()
 ], isAuth, musicController.userDownloads );
 
+//downloads users csv 
+router.get('/user/csv', isAuth, musicController.downloadCsvUsers );
 
 export default router;

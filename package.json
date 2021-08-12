@@ -29,6 +29,7 @@
     "audio-converter": "^1.0.13",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.26.2",
+    "csvjson": "^5.1.0",
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "jsonwebtoken": "^8.5.1",

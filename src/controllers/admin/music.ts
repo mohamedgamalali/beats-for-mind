@@ -9,6 +9,10 @@ import beetsData, { filesContainer } from '../../services/beetData';
 import saveImage from '../../services/cloudenary';
 import getData, { getBeet } from '../../services/getData';
 import SMS from '../../services/sms';
+const csvjson = require('csvjson');
+import {writeFile} from 'fs'
+import path from 'path'
+
 
 export async function addCatigory(req: Request, res: Response, next: NextFunction) {
 
@@ -277,6 +281,54 @@ export async function userDownloads(req: Request, res: Response, next: NextFunct
         }
 
         return response.ok(res, `amount changed with type ${type}`, amount) ;
+
+
+    } catch (err) {
+        console.log(err);
+
+        next(err);
+    }
+}
+
+export async function downloadCsvUsers(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        
+        const users = await User.find({}).select('-local.password -verficationCode -codeExpireDate');
+
+        let result:any = [] ;
+        users.forEach((user:any)=>{
+            let email:any ='' ;
+            let name:any = '';
+            if(user.method == 'local'){
+                email = user.local.email ;
+                name  = user.local.first_name + " " +user.local.last_name ;
+            }else if(user.method == 'facebook'){
+                email = user.facebook.email ;
+                name  = user.facebook.name ;
+            }else if(user.method == 'google'){
+                email = user.google.email ;
+                name  = user.google.name ;
+            }
+            result.push({
+                name:name,
+                email:email,
+                mobile:user.mobile,
+                downloadsPerDay:user.downloadsPerDay,
+                freeDownloads:user.freeDownloads
+            });
+        });
+        const fileData = await csvjson.toCSV(JSON.parse(JSON.stringify(result)), {
+            headers: 'key'
+        });
+
+        writeFile(path.join(__dirname, './users.csv'), fileData, (err)=>{
+            if(err){
+                throw err ;
+            }
+        });
+
+        return res.download(path.join(__dirname, './users.csv'));
 
 
     } catch (err) {
