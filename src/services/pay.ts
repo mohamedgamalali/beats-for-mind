@@ -5,7 +5,7 @@ import Plan, { plan as planType } from '../models/plan';
 import { config } from 'dotenv';
 import httpError from '../helpers/httpError';
 import Transaction from "../models/transactions";
-const stripe = new Stripe('sk_test_51JLBojIUiHtAtSMpK5teNR2iqVC096qR0DTwuKCSSLhxhb0Ree1boxPlXqQ8wxwhpctyReyoFcepmpMa4w7vftcC00XyoVcd6t', {
+const stripe = new Stripe('sk_test_51Iv8EmFqIIp2znzHxqsCjpcYoCYEatIE8BEZPMiL8EAqTUy1SO98xkCxv3Dro9vM7HpuM0BkGsifSjBHyVHAFbVt00ytjdtLYT', {
     apiVersion: '2020-08-27'
 });
 
